@@ -1,0 +1,22 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<h1>Welcome to your gallery</h1>
+<p>Please log in</p>
+
+<form action="signup" method="POST">
+    Email <input type="email" name="email" required> <br>
+    User name: <input type="text" name="username" required> <br>
+    Password: <input type="password" name="password" required><br>
+    Repeat password <input type="password" name="repeat" required><br>
+    <input type="submit">
+</form>
+
+<a href="index.html"><p>Login</p></a>
+
+<div th:if="${errorMessage}" style="color: red;">
+    <p th:text="${errorMessage}"></p>
+</div>
+</body>
+</html>
