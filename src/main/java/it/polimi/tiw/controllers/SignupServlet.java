@@ -1,4 +1,4 @@
-package it.polimi.tiw;
+package it.polimi.tiw.controllers;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -18,7 +18,7 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @WebServlet("/signup")
-public class signupServlet extends HttpServlet {
+public class SignupServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private TemplateEngine templateEngine;
@@ -38,6 +38,16 @@ public class signupServlet extends HttpServlet {
         String password = request.getParameter("password");
         String repeat = request.getParameter("repeat");
         String email = request.getParameter("email");
+
+        if (username == null || username.isEmpty() ||
+                password == null || password.isEmpty() ||
+                repeat == null || repeat.isEmpty() ||
+                email == null || email.isEmpty()) {
+            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+            ctx.setVariable("errorMessage", "Please fulfill all the fields.");
+            templateEngine.process("signup", ctx, response.getWriter());
+            return;
+        }
 
         try {
             if (isNew(username)) {
@@ -75,6 +85,11 @@ public class signupServlet extends HttpServlet {
             ctx.setVariable("errorMessage", "An error occurred while processing your request. Please try again.");
             templateEngine.process("signup", ctx, response.getWriter());
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req,resp);
     }
 
     private boolean emailValid(String email) {
