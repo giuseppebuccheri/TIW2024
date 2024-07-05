@@ -71,12 +71,12 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("home");
             } else {
                 //todo fix controllo che la sessione sia null
-                //HttpSession session = request.getSession();
-                //if(session == null || session.isNew()){
+                HttpSession session = request.getSession();
+                if(session == null || session.isNew()){
                     WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
                     ctx.setVariable("errorMessage", "Invalid username or password. Please try again.");
                     templateEngine.process("index", ctx, response.getWriter());
-                //}
+                }
             }
         } catch (SQLException e) {
             WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
