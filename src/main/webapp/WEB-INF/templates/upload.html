@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Home</title>
+</head>
+<body>
+<h1>Upload your picture</h1>
+Active user:
+<b><span th:text="${username}"></span></b>
+<p>Upload your image here:</p>
+<form action="upload" method="POST">
+    Title <input type="text" name="title" required> <br>
+    Description <input type="text" name="description" required> <br>
+    Date <input type="date" name="date" required> <br>
+    <input type="file" name="path" accept="image/*" required><br>
+    <input type="submit" name="submit" value="Submit report">
+</form>
+<form action="logout">
+    <input type="submit" value="logout">
+</form>
+</body>
+</html>
