@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Home page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<h1>Welcome to the Home Page</h1>
+Nice to see you again
+<b><span th:text="${username}"></span></b>
+<br>
+
+<h2 th:text="${presentation}"></h2>
+<ul>
+    <li th:each="album : ${userAlbums}">
+        <p>Title: <span th:text="${album.title}"></span></p>
+        <p>Creator id: <span th:text="${album.author}"></span></p>
+        <p>Date of creation: <span th:text="${album.date}"></span></p>
+        <a th:href="@{/album(id=${album.id})}">link</a>
+    </li>
+</ul>
+
+<div th:if="${!toggle}">
+    <form action="home" method="post">
+        <input type="hidden" name="toggle" value="false">
+        <input type="submit" value="Create a new album">
+    </form>
+</div>
+<div th:if="${toggle}">
+    <form action="home" method="post">
+        <input type="hidden" name="toggle" value="true">
+        <input type="submit" value="Hide form">
+    </form>
+    <h3>Create a new album</h3>
+    <form action="createAlbum" method="post">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <fieldset>
+            <legend>Select Images:</legend>
+            <ul>
+                <li th:each="image : ${userImages}">
+                    <input type="checkbox" name="images" th:value="${image.id}" />
+                    <span th:text="${image.title}"></span>
+                </li>
+            </ul>
+        </fieldset>
+        <button type="submit">Create Album</button>
+    </form>
+</div>
+
+<h2>Other users albums:</h2>
+<ul>
+    <li th:each="album : ${otherAlbums}">
+        <p>Title: <span th:text="${album.title}"></span></p>
+        <p>Creator id: <span th:text="${album.author}"></span></p>
+        <p>Date of creation: <span th:text="${album.date}"></span></p>
+        <a th:href="@{/album(id=${album.id})}">link</a>
+    </li>
+</ul>
+
+<form action="logout">
+    <input type="submit" value="logout">
+</form>
+</body>
+</html>

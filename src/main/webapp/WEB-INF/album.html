@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Album Page</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<h1>Album Page</h1>
+<h2>Title: <span th:text="${album.title}"></span></h2>
+<h2>Creator: <span th:text="${albumcreator}"></span></h2>
+<h2>Creation Date: <span th:text="${album.date}"></span></h2>
+
+<h2>Album Images</h2>
+<table>
+    <tbody>
+    <tr>
+        <td th:block th:if="${previous}>=0">
+            <a th:href="@{/album(id=${album.id}, offset=${previous})}">
+                <button>Previous</button>
+            </a>
+        </td>
+        <td th:each="col : ${#numbers.sequence(0, 4)}">
+            <div th:if="${col < albumImages.size()}">
+                <a th:href="@{/image(id=${albumImages[col].id})}"><img th:src="@{${albumImages[col].path}}" th:alt="${albumImages[col].title}" class="thumbnail"></a>
+                <br>
+                <span th:text="${albumImages[col].title}"></span>
+            </div>
+            <div th:if="${col >= albumImages.size()}">
+            </div>
+        </td>
+        <td th:block th:if="${next} < ${totalImagesNumber}">
+            <a th:href="@{/album(id=${album.id}, offset=${next})}">
+                <button>Next</button>
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="home"><p>Return to Homepage</p></a>
+</body>
+</html>

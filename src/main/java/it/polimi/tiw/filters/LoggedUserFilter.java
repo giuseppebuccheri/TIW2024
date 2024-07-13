@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter({"/home", "/logout"})
+@WebFilter({"/home", "/logout","/album","/createAlbum","/image","/addComment","/deleteImage"})
 public class LoggedUserFilter implements Filter{
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -22,7 +22,7 @@ public class LoggedUserFilter implements Filter{
         HttpSession s = req.getSession();
 
         //torna alla pagina di login se non autenticato
-        if (s.isNew() || s.getAttribute("user") == null) {
+        if (s == null || s.getAttribute("username") == null) {
             res.sendRedirect(loginpath);
             return;
         }

@@ -1,8 +1,11 @@
 package it.polimi.tiw.controllers;
 
 import it.polimi.tiw.beans.Album;
+import it.polimi.tiw.beans.Comment;
 import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.dao.AlbumDao;
+import it.polimi.tiw.dao.CommentDao;
+import it.polimi.tiw.dao.ImageDao;
 import it.polimi.tiw.dao.UserDao;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -23,12 +26,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
-@WebServlet("/home")
-public class HomePageServlet extends HttpServlet {
+@WebServlet("/image")
+public class ImageServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
 
+    @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(context);
@@ -48,53 +52,64 @@ public class HomePageServlet extends HttpServlet {
             throw new UnavailableException("Couldn't connect to database");
         }
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        handleRequest(request, response, false);
-    }
-
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response, boolean b) throws IOException {
         HttpSession session = request.getSession(false);
         String username= (String) session.getAttribute("username");
-        String presentation;
-        List<Album> userAlbums, otherAlbums, albums;
-        List<Image> userImages;
-        UserDao userDao = new UserDao(connection);
-        AlbumDao albumDao = new AlbumDao(connection);
+
+        int id = 0;
+
         try {
-            userAlbums = userDao.findUserAlbums(userDao.getIdByUsername(username));
-            otherAlbums = userDao.findOthersAlbums(userDao.getIdByUsername(username));
-            userImages = userDao.findUserImages(userDao.getIdByUsername(username));
-            System.out.println("User ID: " + userDao.getIdByUsername(username));
-            System.out.println("Number of album found: " + userAlbums.size());
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in worker's project database extraction");
+            id = Integer.parseInt(request.getParameter("id"));
+        } catch (NumberFormatException | NullPointerException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid id");
             return;
         }
 
-        if(userAlbums.isEmpty())
-            presentation = "You have not any album uploaded";
-        else
-            presentation = "Here's your albums";
+        ImageDao imageDaodao = new ImageDao(connection);
+        CommentDao commentDaodao = new CommentDao(connection);
+        UserDao userDao = new UserDao(connection);
+        Image image;
+        List<Comment> comments;
+        String imageauthor;
+
+        try {
+            image = imageDaodao.getImageById(id);
+            if (image == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
+                return;
+            }
+            comments = commentDaodao.findCommentsByImage(id);
+            setUsernames(comments,userDao);
+            imageauthor = imageDaodao.getAuthorUsernameById(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in image's project database extraction");
+            return;
+        }
+
+        int userId = userDao.getIdByUsername(username);
 
         //Thymeleaf
-        String path = "/WEB-INF/homepage.html";
+        String path = "/WEB-INF/image.html";
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        ctx.setVariable("username", username);
-        ctx.setVariable("toggle", b);
-        ctx.setVariable("presentation", presentation);
-        ctx.setVariable("userAlbums",userAlbums);
-        ctx.setVariable("otherAlbums",otherAlbums);
-        ctx.setVariable("userImages",userImages);
+        ctx.setVariable("image", image);
+        ctx.setVariable("comments", comments);
+        ctx.setVariable("imageauthor", imageauthor);
+        ctx.setVariable("userId", userId);
         templateEngine.process(path, ctx, response.getWriter());
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String choice = request.getParameter("toggle");
-        boolean toggle = Boolean.parseBoolean(choice);
-        handleRequest(request, response, !toggle);
+    private void setUsernames(List<Comment> comments,UserDao dao) {
+        for(Comment c: comments){
+            c.setUsername(dao.getUsername(c.getUser()));
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
     }
 }

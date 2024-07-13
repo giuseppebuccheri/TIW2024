@@ -1,0 +1,60 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.title {
+    margin-top: 50px;
+    font-size: 2.5em;
+    font-weight: bold;
+    text-align: center;
+}
+.login-form {
+    max-width: 400px;
+    margin: auto;
+    margin-top: 10%;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.signup-form {
+    max-width: 400px;
+    margin: auto;
+    margin-top: 7%;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.error-message {
+    color: red;
+    font-size: 18px;
+}
+
+.album-table {
+    margin-top: 20px;
+}
+
+.table-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-form {
+    margin-top: 20px;
+}
+
+.navbar-brand-centered {
+    margin: 0 auto;
+}

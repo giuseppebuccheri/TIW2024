@@ -1,11 +1,8 @@
 package it.polimi.tiw.controllers;
 
-import it.polimi.tiw.beans.Album;
-import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.UserDao;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
@@ -19,16 +16,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 
-@WebServlet("/home")
-public class HomePageServlet extends HttpServlet {
+@WebServlet("/createAlbum")
+public class CreateAlbumServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
 
+    @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(context);
@@ -48,53 +46,42 @@ public class HomePageServlet extends HttpServlet {
             throw new UnavailableException("Couldn't connect to database");
         }
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        handleRequest(request, response, false);
     }
 
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response, boolean b) throws IOException {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
+
         String username= (String) session.getAttribute("username");
-        String presentation;
-        List<Album> userAlbums, otherAlbums, albums;
-        List<Image> userImages;
+        String title = request.getParameter("title");
+        Date date = new java.sql.Date(new java.util.Date().getTime());
+        String[] selectedImages = request.getParameterValues("images");
+
         UserDao userDao = new UserDao(connection);
-        AlbumDao albumDao = new AlbumDao(connection);
+        AlbumDao albumDaodao = new AlbumDao(connection);
         try {
-            userAlbums = userDao.findUserAlbums(userDao.getIdByUsername(username));
-            otherAlbums = userDao.findOthersAlbums(userDao.getIdByUsername(username));
-            userImages = userDao.findUserImages(userDao.getIdByUsername(username));
-            System.out.println("User ID: " + userDao.getIdByUsername(username));
-            System.out.println("Number of album found: " + userAlbums.size());
+            int album_id = albumDaodao.createAlbum(userDao.getIdByUsername(username),title,date);
+            if (selectedImages != null) {
+                for (String imageId : selectedImages) {
+                    albumDaodao.addImageToAlbum(Integer.parseInt(imageId), album_id);
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in worker's project database extraction");
+            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in creating album");
             return;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
 
-        if(userAlbums.isEmpty())
-            presentation = "You have not any album uploaded";
-        else
-            presentation = "Here's your albums";
-
-        //Thymeleaf
-        String path = "/WEB-INF/homepage.html";
-        ServletContext servletContext = getServletContext();
-        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-        ctx.setVariable("username", username);
-        ctx.setVariable("toggle", b);
-        ctx.setVariable("presentation", presentation);
-        ctx.setVariable("userAlbums",userAlbums);
-        ctx.setVariable("otherAlbums",otherAlbums);
-        ctx.setVariable("userImages",userImages);
-        templateEngine.process(path, ctx, response.getWriter());
+        response.sendRedirect("/home");
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String choice = request.getParameter("toggle");
-        boolean toggle = Boolean.parseBoolean(choice);
-        handleRequest(request, response, !toggle);
+    @Override
+    public void destroy() {
+        super.destroy();
     }
 }

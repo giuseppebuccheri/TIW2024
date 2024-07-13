@@ -59,29 +59,27 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-
         UserDao dao = new UserDao(connection);
         User user = null;
+        String path = "/index.html";
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+
         try {
-            user = dao.checkUser(username,password);
-            if (user!=null) {
+            user = dao.checkUser(username, password);
+            if (user != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("username", username);
-
                 response.sendRedirect("home");
             } else {
-                //todo fix controllo che la sessione sia null
-                HttpSession session = request.getSession();
-                if(session == null || session.isNew()){
-                    WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-                    ctx.setVariable("errorMessage", "Invalid username or password. Please try again.");
-                    templateEngine.process("index", ctx, response.getWriter());
-                }
+                String errorMessage = "Invalid username or password. Please try again.";
+                ctx.setVariable("errorMessage", errorMessage);
+                templateEngine.process(path, ctx, response.getWriter());
             }
         } catch (SQLException e) {
-            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-            ctx.setVariable("errorMessage", "An error occurred while processing your request. Please try again later.");
-            templateEngine.process("index", ctx, response.getWriter());
+            String errorMessage = "An error occurred while processing your request. Please try again later.";
+            ctx.setVariable("errorMessage", errorMessage);
+            templateEngine.process(path, ctx, response.getWriter());
         }
     }
 
