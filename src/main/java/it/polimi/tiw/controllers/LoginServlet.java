@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 @WebServlet("/login")
+@MultipartConfig
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
@@ -70,16 +72,17 @@ public class LoginServlet extends HttpServlet {
             if (user != null) {
                 HttpSession session = request.getSession();
                 session.setAttribute("username", username);
-                response.sendRedirect("home");
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(username);
             } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 String errorMessage = "Invalid username or password. Please try again.";
-                ctx.setVariable("errorMessage", errorMessage);
-                templateEngine.process(path, ctx, response.getWriter());
+                response.getWriter().println(errorMessage);
             }
         } catch (SQLException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             String errorMessage = "An error occurred while processing your request. Please try again later.";
-            ctx.setVariable("errorMessage", errorMessage);
-            templateEngine.process(path, ctx, response.getWriter());
+            response.getWriter().println(errorMessage);
         }
     }
 
