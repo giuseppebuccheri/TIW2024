@@ -7,7 +7,6 @@ public class Album {
     private int author;
     private String title;
     private Date date;
-
     private String username;
 
     public Album(int id, int author, String title, Date date) {
@@ -47,5 +46,13 @@ public class Album {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

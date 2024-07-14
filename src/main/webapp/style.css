@@ -1,5 +1,31 @@
 body {
     background-color: #f8f9fa;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 1800px;
+    padding: 0 15px;
+}
+
+.container-fluid {
+    height: 850px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.panel {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    height: 100%;
+    overflow: auto;
+    margin: 0 auto;
 }
 
 .title {
@@ -41,14 +67,23 @@ body {
 
 .album-table {
     margin-top: 20px;
+    width: 100%;
+    border: 1px solid lightblue;
 }
 
-.table-container {
+.select-table {
+    width: 80%;
+    margin: auto;
+}
+
+.table-container,
+.form-container {
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
 }
 
 .toggle-form {
@@ -57,4 +92,115 @@ body {
 
 .navbar-brand-centered {
     margin: 0 auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.select-table input[type="checkbox"] {
+    transform: scale(1.5);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.thumbnail {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+    margin: auto;
+}
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.button-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: auto;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
+}
+
+.img-container {
+    margin: 20px;
+    overflow: hidden;
+}
+
+.comment-container {
+    padding-right: 20px;
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+}
+
+.comment-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.comment-list-container {
+    flex: 1;
+    max-height: 600px;
+    overflow: auto;
+}
+
+.list-group-item {
+    margin-bottom: 10px;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group .form-control {
+    flex: 1;
+}
+
+.input-group .btn-custom {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.input-group .btn-custom:hover {
+    background-color: #0056b3;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+
+.mt-4 {
+    margin-top: 1.5rem!important;
+}
+
+.d-flex {
+    display: flex!important;
+}
+
+.align-items-center {
+    align-items: center!important;
+}
+
+.justify-content-center {
+    justify-content: center!important;
+}
+
+.flex-column {
+    flex-direction: column!important;
 }

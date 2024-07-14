@@ -1,6 +1,7 @@
 package it.polimi.tiw.controllers;
 
 import it.polimi.tiw.beans.Album;
+import it.polimi.tiw.beans.Comment;
 import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.UserDao;
@@ -53,6 +54,14 @@ public class HomePageServlet extends HttpServlet {
         handleRequest(request, response, false);
     }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String choice = request.getParameter("toggle");
+        boolean toggle = Boolean.parseBoolean(choice);
+        handleRequest(request, response, !toggle);
+    }
+
     private void handleRequest(HttpServletRequest request, HttpServletResponse response, boolean b) throws IOException {
         HttpSession session = request.getSession(false);
         String username= (String) session.getAttribute("username");
@@ -64,6 +73,7 @@ public class HomePageServlet extends HttpServlet {
         try {
             userAlbums = userDao.findUserAlbums(userDao.getIdByUsername(username));
             otherAlbums = userDao.findOthersAlbums(userDao.getIdByUsername(username));
+            setUsernames(otherAlbums,userDao);
             userImages = userDao.findUserImages(userDao.getIdByUsername(username));
             System.out.println("User ID: " + userDao.getIdByUsername(username));
             System.out.println("Number of album found: " + userAlbums.size());
@@ -74,9 +84,9 @@ public class HomePageServlet extends HttpServlet {
         }
 
         if(userAlbums.isEmpty())
-            presentation = "You have not any album uploaded";
+            presentation = "You have no album uploaded";
         else
-            presentation = "Here's your albums";
+            presentation = "Your albums";
 
         //Thymeleaf
         String path = "/WEB-INF/homepage.html";
@@ -91,10 +101,9 @@ public class HomePageServlet extends HttpServlet {
         templateEngine.process(path, ctx, response.getWriter());
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String choice = request.getParameter("toggle");
-        boolean toggle = Boolean.parseBoolean(choice);
-        handleRequest(request, response, !toggle);
+    private void setUsernames(List<Album> albums, UserDao dao) {
+        for(Album a: albums){
+            a.setUsername(dao.getUsername(a.getAuthor()));
+        }
     }
 }

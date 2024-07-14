@@ -1,66 +1,111 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="ISO-8859-1">
+    <meta charset="UTF-8">
     <title>Home page</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-<h1>Welcome to the Home Page</h1>
-Nice to see you again
-<b><span th:text="${username}"></span></b>
-<br>
-
-<h2 th:text="${presentation}"></h2>
-<ul>
-    <li th:each="album : ${userAlbums}">
-        <p>Title: <span th:text="${album.title}"></span></p>
-        <p>Creator id: <span th:text="${album.author}"></span></p>
-        <p>Date of creation: <span th:text="${album.date}"></span></p>
-        <a th:href="@{/album(id=${album.id})}">link</a>
-    </li>
-</ul>
-
-<div th:if="${!toggle}">
-    <form action="home" method="post">
-        <input type="hidden" name="toggle" value="false">
-        <input type="submit" value="Create a new album">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <form action="logout" method="post" class="form-inline ml-auto">
+        <button type="submit" class="btn btn-outline-danger btn-lg">Logout</button>
     </form>
+</nav>
+
+<div class="container">
+    <h1 class="title">Welcome to the Home Page</h1>
+    <p class="text-center">Nice to see you again, <b><span th:text="${username}"></span></b></p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-center" th:text="${presentation}"></h3>
+            <div class="table-container">
+                <table class="table album-table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date of Creation</th>
+                        <th>Link</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="album : ${userAlbums}">
+                        <td th:text="${album.title}"></td>
+                        <td th:text="${album.date}"></td>
+                        <td><a th:href="@{/album(id=${album.id})}" class="btn btn-info">View</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="toggle-form">
+                <div th:if="${!toggle}">
+                    <form action="home" method="post">
+                        <input type="hidden" name="toggle" value="false">
+                        <button type="submit" class="btn btn-primary">Create a new album</button>
+                    </form>
+                </div>
+                <div class="form-container" th:if="${toggle}">
+                    <form action="home" method="post">
+                        <input type="hidden" name="toggle" value="true">
+                        <button type="submit" class="btn btn-primary">Hide form</button>
+                    </form>
+                    <br>
+                    <div class="form-container" th:if="${toggle}">
+                        <h3 class="text-center">Create a new album</h3>
+                        <form action="createAlbum" method="post">
+                            <div class="form-group">
+                                <label class="text-center" for="title">Title:</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="table-container select-table">
+                                <table class="table album-table">
+                                    <thead class="text-center">
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Image Title</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-center" >
+                                    <tr th:each="image : ${userImages}">
+                                        <td><input class="form-check-input" type="checkbox" name="images" th:value="${image.id}"></td>
+                                        <td th:text="${image.title}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-success btn-block">Create Album</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3 class="text-center">Other Users' Albums</h3>
+            <div class="table-container">
+                <table class="table album-table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Creator</th>
+                        <th>Date of Creation</th>
+                        <th>Link</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="album : ${otherAlbums}">
+                        <td th:text="${album.title}"></td>
+                        <td th:text="${album.username}"></td>
+                        <td th:text="${album.date}"></td>
+                        <td><a th:href="@{/album(id=${album.id})}" class="btn btn-info">View</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
-<div th:if="${toggle}">
-    <form action="home" method="post">
-        <input type="hidden" name="toggle" value="true">
-        <input type="submit" value="Hide form">
-    </form>
-    <h3>Create a new album</h3>
-    <form action="createAlbum" method="post">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
-        <fieldset>
-            <legend>Select Images:</legend>
-            <ul>
-                <li th:each="image : ${userImages}">
-                    <input type="checkbox" name="images" th:value="${image.id}" />
-                    <span th:text="${image.title}"></span>
-                </li>
-            </ul>
-        </fieldset>
-        <button type="submit">Create Album</button>
-    </form>
-</div>
-
-<h2>Other users albums:</h2>
-<ul>
-    <li th:each="album : ${otherAlbums}">
-        <p>Title: <span th:text="${album.title}"></span></p>
-        <p>Creator id: <span th:text="${album.author}"></span></p>
-        <p>Date of creation: <span th:text="${album.date}"></span></p>
-        <a th:href="@{/album(id=${album.id})}">link</a>
-    </li>
-</ul>
-
-<form action="logout">
-    <input type="submit" value="logout">
-</form>
 </body>
 </html>

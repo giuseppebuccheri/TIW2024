@@ -5,7 +5,6 @@ public class Comment {
     private String text;
     private int user;
     private int image;
-
     private String username;
 
     public Comment(int id, String text, int image, int user) {
