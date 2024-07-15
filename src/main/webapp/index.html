@@ -5,13 +5,15 @@
     <title>Login / Sign Up</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="util.js" charset="utf-8" defer></script>
+    <script src="authentication.js" charset="utf-8" defer></script>
 </head>
 <body>
 <p class="title">Image Gallery</p>
 <div class="container">
     <div id="login-form" class="login-form">
         <h2 class="text-center mb-4">Login</h2>
-        <form action="login" id="loginForm" method="POST">
+        <form>
             <div class="form-group">
                 <label for="login-username">Username:</label>
                 <input type="text" class="form-control" id="login-username" name="username" required>
@@ -20,7 +22,7 @@
                 <label for="login-password">Password:</label>
                 <input type="password" class="form-control" id="login-password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <input id="loginButton" type="button" value="Log in" class="btn btn-primary btn-block">
         </form>
         <div class="text-center mt-3">
             <a href="#" id="show-signup">Create a new account</a>
@@ -28,7 +30,7 @@
     </div>
     <div id="signup-form" style="display:none;" class="signup-form">
         <h2 class="text-center mb-4">Create Your Account</h2>
-        <form action="signup" id="signupForm" method="POST">
+        <form>
             <div class="form-group">
                 <label for="signup-email">Email:</label>
                 <input type="email" class="form-control" id="signup-email" name="email" required>
@@ -45,7 +47,7 @@
                 <label for="signup-repeat-password">Repeat Password:</label>
                 <input type="password" class="form-control" id="signup-repeat-password" name="repeat" required>
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+            <input id="signupButton" type="button" value="Sign Up" class="btn btn-primary btn-block">
         </form>
         <div class="text-center mt-3">
             <a href="#" id="show-login">Login to an existing account</a>
@@ -55,6 +57,5 @@
 <div class="text-center mt-3">
     <p id="errorMessage" class="error-message"></p>
 </div>
-<script src="login.js"></script>
 </body>
 </html>

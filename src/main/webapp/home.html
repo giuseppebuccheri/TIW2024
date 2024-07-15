@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home page</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="util.js" charset="utf-8" defer></script>
+    <script src="homepage.js" charset="utf-8" defer></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <form action="logout" method="post" class="form-inline ml-auto">
+        <button type="submit" class="btn btn-outline-danger btn-lg">Logout</button>
+    </form>
+</nav>
+
+<div class="container">
+    <h1 class="title">Welcome to Home Page</h1>
+    <p class="text-center">Nice to see you again, <b><span id="id_username"></span></b></p>
+
+    <div class="serverError">
+        <p class="error-message" id="serverError"></p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-center">Your albums:</h3>
+            <div class="table-container">
+                <table id="userAlbumsContainer" class="table album-table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date of Creation</th>
+                        <th>Link</th>
+                    </tr>
+                    </thead>
+                    <tbody id="userAlbums">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="toggle-form">
+                <input type="hidden" name="toggle" id="toggle">
+                <div class="form-container" id="createAlbumFormContainer" style="display: none;">
+                    <br>
+                    <div class="form-container">
+                        <h3 class="text-center">Create a new album</h3>
+                        <form id="createAlbumForm">
+                            <div class="form-group">
+                                <label class="text-center" for="title">Title:</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="table-container select-table">
+                                <table class="table album-table">
+                                    <thead class="text-center">
+                                    <tr>
+                                        <th>Select</th>
+                                        <th>Image Title</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="selectedImage" class="text-center">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-success btn-block">Create Album</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h3 class="text-center">Other Users' Albums</h3>
+            <div class="table-container">
+                <table id="othersAlbumsContainer" class="table album-table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date of Creation</th>
+                        <th>Link</th>
+                    </tr>
+                    </thead>
+                    <tbody id="othersAlbums">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -174,4 +174,21 @@ public class UserDao {
             throw new RuntimeException(e);
         }
     }
+
+    public List<Album> findAllAlbums(int id) throws SQLException {
+        List<Album> albums = new ArrayList<Album>();
+        String sql = "SELECT * FROM albums";
+        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
+            try (ResultSet result = pstatement.executeQuery();) {
+                while (result.next()) {
+                    Album a = new Album(result.getInt("id_album"),
+                            result.getInt("id_author"),
+                            result.getString("title"),
+                            result.getDate("date"));
+                    albums.add(a);
+                }
+            }
+        }
+        return albums;
+    }
 }

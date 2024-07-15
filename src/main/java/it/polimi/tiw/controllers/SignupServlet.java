@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,31 +22,18 @@ import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+import static it.polimi.tiw.utils.ParamsChecker.checkParam;
+
 @WebServlet("/signup")
+@MultipartConfig
 public class SignupServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private TemplateEngine templateEngine = null;
     private Connection connection = null;
 
     @Override
     public void init() throws ServletException {
-        ServletContext context = getServletContext();
-        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(context);
-        templateResolver.setTemplateMode(TemplateMode.HTML);
-        this.templateEngine = new TemplateEngine();
-        this.templateEngine.setTemplateResolver(templateResolver);
-        templateResolver.setSuffix(".html");
-
-        try {
-            String driver = context.getInitParameter("dbDriver");
-            String DB_URL = context.getInitParameter("dbUrl");
-            String USER = context.getInitParameter("dbUser");
-            String PASS = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new UnavailableException("Couldn't connect to database");
-        }
+        connection = getConnection(getServletContext());
     }
 
     @Override
@@ -55,15 +43,20 @@ public class SignupServlet extends HttpServlet {
         String repeat = request.getParameter("repeat");
         String email = request.getParameter("email");
 
-        if (username == null || username.isEmpty() ||
-                password == null || password.isEmpty() ||
-                repeat == null || repeat.isEmpty() ||
-                email == null || email.isEmpty()) {
-            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-            ctx.setVariable("errorMessage", "Please fulfill all the fields.");
-            templateEngine.process("signup", ctx, response.getWriter());
+        System.out.println("ricevuti");
+        System.out.println(username);
+        System.out.println(password);
+        System.out.println(repeat);
+        System.out.println(email);
+
+        if (!checkParam(username) || !checkParam(username) || !checkParam(repeat) ||!checkParam(email)) {
+            String errorMessage = "Incorrect or missing values";
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write(errorMessage);
             return;
         }
+
+        System.out.println("buoni");
 
         UserDao dao = new UserDao(connection);
 
@@ -72,36 +65,34 @@ public class SignupServlet extends HttpServlet {
                 if (repeat.equals(password)){
                     if (dao.emailValid(email)){
                         if (dao.insertUser(username,password,email)){
-                            HttpSession session = request.getSession();
-                            session.setAttribute("username", username);
-
-                            response.sendRedirect("home");
+                            request.getSession().setAttribute("username", username);
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().write(username);
                         }
                         else {
-                            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-                            ctx.setVariable("errorMessage", "Please try again.");
-                            templateEngine.process("signup", ctx, response.getWriter());
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            String errorMessage = "Invalid username or password. Please try again.";
+                            response.getWriter().write(errorMessage);
                         }
                     } else {
-                        WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-                        ctx.setVariable("errorMessage", "Invalid email. Please try again. ");
-                        templateEngine.process("signup", ctx, response.getWriter());
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        response.getWriter().write("Invalid email. Please try again.");
                     }
                 }else {
-                    WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-                    ctx.setVariable("errorMessage", "The two passwords are different.Please try again.");
-                    templateEngine.process("signup", ctx, response.getWriter());
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    String errorMessage = "The two passwords are different.Please try again.";
+                    response.getWriter().write(errorMessage);
                 }
             } else {
-                WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-                ctx.setVariable("errorMessage", "This username already exists.Please try again.");
-                templateEngine.process("signup", ctx, response.getWriter());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                String errorMessage = "This username already exists.Please try again.";
+                response.getWriter().write(errorMessage);
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
-            ctx.setVariable("errorMessage", "An error occurred while processing your request. Please try again.");
-            templateEngine.process("signup", ctx, response.getWriter());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            String errorMessage = "An error occurred while processing your request. Please try again.";
+            response.getWriter().write(errorMessage);
         }
     }
 

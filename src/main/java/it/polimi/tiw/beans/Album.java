@@ -1,6 +1,6 @@
 package it.polimi.tiw.beans;
 
-import java.util.Date;
+import java.sql.Date;
 
 public class Album {
     private int id;
