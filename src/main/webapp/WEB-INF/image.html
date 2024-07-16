@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Image page</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -26,7 +26,7 @@
                 <p><b>Author: </b><span th:text="${imageauthor}"></span></p>
                 <p><b>Creation Date: </b><span th:text="${image.date}"></span></p>
                 <div th:if="${userId == image.idAuthor}" class="mb-5">
-                    <form action="/deleteImage" method="post">
+                    <form action="deleteImage" method="post">
                         <input type="hidden" name="imageId" th:value="${image.id}">
                         <button type="submit" class="btn btn-danger">Delete Image</button>
                     </form>
@@ -47,7 +47,7 @@
                             </li>
                         </ul>
                     </div>
-                    <form action="/addComment" method="post">
+                    <form action="addComment" method="post">
                         <div class="input-group mt-3">
                             <input type="text" name="commentText" class="form-control" placeholder="Type your comment" required>
                             <input type="hidden" name="imageId" th:value="${image.id}">

@@ -60,16 +60,14 @@ public class AddCommentServlet extends HttpServlet {
         System.out.println("userId "+userId);
 
         if (commentText == null || commentText.isEmpty() || username == null) {
-            response.sendRedirect("/image?id=" + imageId);
+            response.sendRedirect("image?id=" + imageId);
             return;
         }
-
-        System.out.println("arrivato 1");
 
         CommentDao commentDao = new CommentDao(connection);
         try {
             commentDao.addComment(imageId, userId, commentText);
-            response.sendRedirect("/image?id=" + imageId);
+            response.sendRedirect("image?id=" + imageId);
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment");

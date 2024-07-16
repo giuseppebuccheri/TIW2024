@@ -62,7 +62,7 @@ public class DeleteImageServlet extends HttpServlet {
             }
             commentDao.deleteImagesComments(imageId);
             imageDao.deleteImage(imageId);
-            response.sendRedirect("/home");
+            response.sendRedirect("home");
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete image");
