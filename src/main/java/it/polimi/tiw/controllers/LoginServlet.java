@@ -21,6 +21,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
+import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -37,21 +39,21 @@ public class LoginServlet extends HttpServlet {
         this.templateEngine = new TemplateEngine();
         this.templateEngine.setTemplateResolver(templateResolver);
 
-        try {
-            String driver = context.getInitParameter("dbDriver");
-            String DB_URL = context.getInitParameter("dbUrl");
-            String USER = context.getInitParameter("dbUser");
-            String PASS = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new UnavailableException("Couldn't connect to database");
-        }
+        connection = getConnection(context);
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req, resp);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        if (request.getSession(false) == null || request.getSession(false).getAttribute("username") != null) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+        String path = "/index.html";
+        templateEngine.process(path, ctx, response.getWriter());
     }
 
     @Override

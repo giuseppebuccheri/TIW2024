@@ -18,7 +18,7 @@ public class LoggedUserFilter implements Filter{
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        String loginpath = req.getServletContext().getContextPath() + "/index.html";
+        String loginpath = req.getServletContext().getContextPath() + "/login";
         HttpSession s = req.getSession();
 
         //torna alla pagina di login se non autenticato

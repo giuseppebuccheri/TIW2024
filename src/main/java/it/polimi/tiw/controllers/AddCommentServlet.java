@@ -19,6 +19,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+
 @WebServlet("/addComment")
 public class AddCommentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -33,16 +35,7 @@ public class AddCommentServlet extends HttpServlet {
         this.templateEngine.setTemplateResolver(templateResolver);
         templateResolver.setSuffix(".html");
 
-        try {
-            String driver = context.getInitParameter("dbDriver");
-            String DB_URL = context.getInitParameter("dbUrl");
-            String USER = context.getInitParameter("dbUser");
-            String PASS = context.getInitParameter("dbPassword");
-            Class.forName(driver);
-            connection = DriverManager.getConnection(DB_URL, USER, PASS);
-        } catch (ClassNotFoundException | SQLException e) {
-            throw new UnavailableException("Couldn't connect to database");
-        }
+        connection = getConnection(context);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
