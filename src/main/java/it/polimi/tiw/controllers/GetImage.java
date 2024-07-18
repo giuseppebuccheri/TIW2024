@@ -1,9 +1,7 @@
 package it.polimi.tiw.controllers;
 
-import it.polimi.tiw.beans.Album;
 import it.polimi.tiw.beans.Comment;
 import it.polimi.tiw.beans.Image;
-import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.CommentDao;
 import it.polimi.tiw.dao.ImageDao;
 import it.polimi.tiw.dao.UserDao;
@@ -14,7 +12,6 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,14 +19,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
 
 @WebServlet("/image")
-public class ImageServlet extends HttpServlet {
+public class GetImage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
@@ -56,7 +52,7 @@ public class ImageServlet extends HttpServlet {
         try {
             id = Integer.parseInt(request.getParameter("id"));
         } catch (NumberFormatException | NullPointerException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid id");
+            response.sendRedirect("home");
             return;
         }
 
@@ -70,7 +66,7 @@ public class ImageServlet extends HttpServlet {
         try {
             image = imageDaodao.getImageById(id);
             if (image == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
+                response.sendRedirect("home");
                 return;
             }
             comments = commentDaodao.findCommentsByImage(id);
@@ -99,10 +95,5 @@ public class ImageServlet extends HttpServlet {
         for(Comment c: comments){
             c.setUsername(dao.getUsername(c.getUser()));
         }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
     }
 }

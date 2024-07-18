@@ -1,6 +1,8 @@
 package it.polimi.tiw.controllers;
 
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.CommentDao;
+import it.polimi.tiw.dao.ImageDao;
 import it.polimi.tiw.dao.UserDao;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -20,9 +22,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
-@WebServlet("/addComment")
-public class AddCommentServlet extends HttpServlet {
+@WebServlet("/deleteImage")
+public class DeleteImage extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
@@ -41,30 +44,41 @@ public class AddCommentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        String commentText = request.getParameter("commentText");
-        int imageId = Integer.parseInt(request.getParameter("imageId"));
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("user");
+        int imageId;
 
-        UserDao userDao= new UserDao(connection);
-        int userId = userDao.getIdByUsername(username);
-
-        System.out.println("text "+commentText);
-        System.out.println("imageId "+imageId);
-        System.out.println("userId "+userId);
-
-        if (commentText == null || commentText.isEmpty() || username == null) {
-            response.sendRedirect("image?id=" + imageId);
+        if (!checkParams(request.getParameter("imageId"))) {
+            response.sendRedirect("home");
             return;
         }
 
+        try {
+            imageId = Integer.parseInt(request.getParameter("imageId"));
+        } catch (NumberFormatException e) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        ImageDao imageDao = new ImageDao(connection);
         CommentDao commentDao = new CommentDao(connection);
         try {
-            commentDao.addComment(imageId, userId, commentText);
-            response.sendRedirect("image?id=" + imageId);
+            String imageAuthor = imageDao.getAuthorUsernameById(imageId);
+            if (!user.getUsername().equals(imageAuthor)) {
+                response.sendRedirect("home");
+                return;
+            }
+            commentDao.deleteImagesComments(imageId);
+            imageDao.deleteImage(imageId);
+            response.sendRedirect("home");
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete image");
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
     }
 
     public void destroy() {

@@ -20,6 +20,9 @@
     <div class="row">
         <div class="col-md-6">
             <h3 class="text-center" th:text="${presentation}"></h3>
+            <div class="text-center mt-3">
+                <p th:text="${errorMessage}" class="error-message"></p>
+            </div>
             <div class="table-container">
                 <table class="table album-table">
                     <thead>
@@ -40,19 +43,9 @@
             </div>
 
             <div class="toggle-form">
-                <div th:if="${!toggle}">
-                    <form action="home" method="post">
-                        <input type="hidden" name="toggle" value="false">
-                        <button type="submit" class="btn btn-primary">Create a new album</button>
-                    </form>
-                </div>
-                <div class="form-container" th:if="${toggle}">
-                    <form action="home" method="post">
-                        <input type="hidden" name="toggle" value="true">
-                        <button type="submit" class="btn btn-primary">Hide form</button>
-                    </form>
+                <div class="form-container">
                     <br>
-                    <div class="form-container" th:if="${toggle}">
+                    <div class="form-container">
                         <h3 class="text-center">Create a new album</h3>
                         <form action="createAlbum" method="post">
                             <div class="form-group">

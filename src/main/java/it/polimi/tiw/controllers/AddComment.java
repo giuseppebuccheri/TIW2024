@@ -1,7 +1,7 @@
 package it.polimi.tiw.controllers;
 
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.CommentDao;
-import it.polimi.tiw.dao.ImageDao;
 import it.polimi.tiw.dao.UserDao;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -9,7 +9,6 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,13 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
-@WebServlet("/deleteImage")
-public class DeleteImageServlet extends HttpServlet {
+@WebServlet("/addComment")
+public class AddComment extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
@@ -39,26 +38,39 @@ public class DeleteImageServlet extends HttpServlet {
         connection = getConnection(context);
     }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
-        int imageId = Integer.parseInt(request.getParameter("imageId"));
-        String username = (String) session.getAttribute("username");
+        String commentText = request.getParameter("commentText");
+        User user = (User) session.getAttribute("user");
+        int imageId;
 
-        ImageDao imageDao = new ImageDao(connection);
+        UserDao userDao = new UserDao(connection);
+
+        if (!checkParams(commentText) || !checkParams(request.getParameter("imageId"))) {
+            response.sendRedirect("home");
+            return;
+        }
+
+        try {
+            imageId = Integer.parseInt(request.getParameter("imageId"));
+        } catch (NumberFormatException e) {
+            response.sendRedirect("home");
+            return;
+        }
+
+
         CommentDao commentDao = new CommentDao(connection);
         try {
-            String imageAuthor = imageDao.getAuthorUsernameById(imageId);
-            if (!username.equals(imageAuthor)) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "You are not authorized to delete this image");
-                return;
-            }
-            commentDao.deleteImagesComments(imageId);
-            imageDao.deleteImage(imageId);
-            response.sendRedirect("home");
+            commentDao.addComment(imageId, user.getId(), commentText);
+            response.sendRedirect("image?id=" + imageId);
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete image");
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment");
         }
     }
 

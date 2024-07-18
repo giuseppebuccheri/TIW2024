@@ -2,13 +2,11 @@ package it.polimi.tiw.controllers;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,9 +20,10 @@ import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
 @WebServlet("/signup")
-public class SignupServlet extends HttpServlet {
+public class Signup extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
@@ -42,19 +41,26 @@ public class SignupServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletContext servletContext = getServletContext();
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+        String path = "/signup.html";
+        templateEngine.process(path, ctx, response.getWriter());
+//        doPost(request,response);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String repeat = request.getParameter("repeat");
         String email = request.getParameter("email");
 
-        if (username == null || username.isEmpty() ||
-                password == null || password.isEmpty() ||
-                repeat == null || repeat.isEmpty() ||
-                email == null || email.isEmpty()) {
+        if (!checkParams(username) || !checkParams(password) || !checkParams(repeat) || !checkParams(email)) {
             WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
             ctx.setVariable("errorMessage", "Please fulfill all the fields.");
-            templateEngine.process("signup", ctx, response.getWriter());
+            String path = "/signup";
+            templateEngine.process(path, ctx, response.getWriter());
             return;
         }
 
@@ -63,7 +69,7 @@ public class SignupServlet extends HttpServlet {
         try {
             if (dao.isNew(username)) {
                 if (repeat.equals(password)){
-                    if (dao.emailValid(email)){
+                    if (emailValid(email)){
                         if (dao.insertUser(username,password,email)){
                             HttpSession session = request.getSession();
                             session.setAttribute("username", username);
@@ -98,8 +104,10 @@ public class SignupServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req,resp);
+    //ritorna true se è valida
+    public boolean emailValid(String email) {
+        Pattern p = Pattern.compile(".+@.+\\.[a-z]+", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(email);
+        return m.matches();
     }
 }

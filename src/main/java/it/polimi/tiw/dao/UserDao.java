@@ -7,6 +7,8 @@ import it.polimi.tiw.beans.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserDao {
     private Connection connection;
@@ -104,15 +106,6 @@ public class UserDao {
             }
         }
         return albums;
-    }
-
-
-    public boolean emailValid(String email) {
-        boolean isValid = true;
-
-        //TODO check how to do
-
-        return isValid;
     }
 
     public boolean insertUser(String username, String password, String email) throws ClassNotFoundException, SQLException {
