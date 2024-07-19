@@ -22,7 +22,7 @@ public class LoggedUserFilter implements Filter{
         HttpSession s = req.getSession();
 
         //torna alla pagina di login se non autenticato
-        if (s == null || s.getAttribute("username") == null) {
+        if (s == null || s.getAttribute("user") == null) {
             res.sendRedirect(loginpath);
             return;
         }

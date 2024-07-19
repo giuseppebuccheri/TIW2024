@@ -2,32 +2,24 @@ package it.polimi.tiw.controllers;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.servlet.ServletContext;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import it.polimi.tiw.dao.UserDao;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
-import static it.polimi.tiw.utils.ParamsChecker.checkParam;
+import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
 @WebServlet("/signup")
 @MultipartConfig
-public class SignupServlet extends HttpServlet {
+public class Signup extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
 
@@ -49,7 +41,7 @@ public class SignupServlet extends HttpServlet {
         System.out.println(repeat);
         System.out.println(email);
 
-        if (!checkParam(username) || !checkParam(username) || !checkParam(repeat) ||!checkParam(email)) {
+        if (!checkParams(username) || !checkParams(username) || !checkParams(repeat) ||!checkParams(email)) {
             String errorMessage = "Incorrect or missing values";
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write(errorMessage);
@@ -63,7 +55,7 @@ public class SignupServlet extends HttpServlet {
         try {
             if (dao.isNew(username)) {
                 if (repeat.equals(password)){
-                    if (dao.emailValid(email)){
+                    if (emailValid(email)){
                         if (dao.insertUser(username,password,email)){
                             request.getSession().setAttribute("username", username);
                             response.setStatus(HttpServletResponse.SC_OK);
@@ -94,6 +86,12 @@ public class SignupServlet extends HttpServlet {
             String errorMessage = "An error occurred while processing your request. Please try again.";
             response.getWriter().write(errorMessage);
         }
+    }
+
+    public boolean emailValid(String email) {
+        Pattern p = Pattern.compile(".+@.+\\.[a-z]+", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(email);
+        return m.matches();
     }
 
     @Override

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Home page</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="util.js" charset="utf-8" defer></script>
-    <script src="homepage.js" charset="utf-8" defer></script>
+    <script src="js/utility.js" charset="utf-8" defer></script>
+    <script src="js/homepage.js" charset="utf-8" defer></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -16,74 +16,132 @@
 </nav>
 
 <div class="container">
-    <h1 class="title">Welcome to Home Page</h1>
-    <p class="text-center">Nice to see you again, <b><span id="id_username"></span></b></p>
+    <div class="panel mt-4 mx-auto">
+        <h1 class="title">Welcome to Home Page</h1>
+        <p class="text-center">Nice to see you again, <b><span id="id_username"></span></b></p>
 
-    <div class="serverError">
-        <p class="error-message" id="serverError"></p>
-    </div>
+        <div class="serverError">
+            <p class="error-message" id="serverError"></p>
+        </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <h3 class="text-center">Your albums:</h3>
-            <div class="table-container">
-                <table id="userAlbumsContainer" class="table album-table">
-                    <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date of Creation</th>
-                        <th>Link</th>
-                    </tr>
-                    </thead>
-                    <tbody id="userAlbums">
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="toggle-form">
-                <input type="hidden" name="toggle" id="toggle">
-                <div class="form-container" id="createAlbumFormContainer" style="display: none;">
-                    <br>
-                    <div class="form-container">
-                        <h3 class="text-center">Create a new album</h3>
-                        <form id="createAlbumForm">
-                            <div class="form-group">
-                                <label class="text-center" for="title">Title:</label>
-                                <input type="text" class="form-control" id="title" name="title" required>
-                            </div>
-                            <div class="table-container select-table">
-                                <table class="table album-table">
-                                    <thead class="text-center">
-                                    <tr>
-                                        <th>Select</th>
-                                        <th>Image Title</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="selectedImage" class="text-center">
-                                    </tbody>
-                                </table>
-                            </div>
-                            <br>
-                            <button type="submit" class="btn btn-success btn-block">Create Album</button>
-                        </form>
+        <div class="row">
+            <div class="col-md-6">
+                <button id="toggle" class="btn btn-primary">Create new album</button>
+                <h3 class="text-center">Your albums:</h3>
+                <div class="toggle-form">
+                    <div class="form-container" id="createAlbumFormContainer" style="display: none;">
+                        <br>
+                        <div class="form-container">
+                            <h3 class="text-center">Create a new album</h3>
+                            <form id="createAlbumForm" method="post">
+                                <div class="form-group">
+                                    <label class="text-center" for="title">Title:</label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                </div>
+                                <div class="table-container select-table">
+                                    <table class="table album-table">
+                                        <thead class="text-center">
+                                        <tr>
+                                            <th>Select</th>
+                                            <th>Image Title</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="userImages" class="text-center">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <br>
+                                <input id="createAlbumButton" type="button" value="Create Album"
+                                       class="btn btn-primary btn-block">
+                            </form>
+                        </div>
                     </div>
+                </div>
+                <div class="table-container">
+                    <table id="userAlbumsContainer" class="table album-table">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date of Creation</th>
+                            <th>Link</th>
+                        </tr>
+                        </thead>
+                        <tbody id="userAlbums">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="text-center">Other Users' Albums</h3>
+                <div class="table-container">
+                    <table id="othersAlbumsContainer" class="table album-table">
+                        <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date of Creation</th>
+                            <th>Link</th>
+                        </tr>
+                        </thead>
+                        <tbody id="othersAlbums">
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <h3 class="text-center">Other Users' Albums</h3>
-            <div class="table-container">
-                <table id="othersAlbumsContainer" class="table album-table">
-                    <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date of Creation</th>
-                        <th>Link</th>
-                    </tr>
-                    </thead>
-                    <tbody id="othersAlbums">
-                    </tbody>
-                </table>
+    </div>
+    <br>
+    <div id="albumImagesDiv" class="panel mt-4" style="padding: 20px;">
+        <h1 class="text-center">Album View</h1><br>
+        <b><p class="text-center">Title:</b><span id="albumTile"></span></p>
+        <b><p class="text-center">Creator:</b><span id="albumCreator"></span></p>
+        <b><p class="text-center">Date:</b><span id="albumDate"></span></p>
+        <div id="albumImagesContainer" class="table-responsive" style="display:none;">
+            <table class="table table-bordered text-center">
+                <tbody>
+                <tr id="imageRow">
+                    <td id="prevButton" class="btn btn-primary" style="display:none; vertical-align: middle;">Previous
+                    </td>
+                    <td id="nextButton" class="btn btn-primary" style="display:none; vertical-align: middle;">Next</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <div class="panel my-4 mx-4">
+            <span class="close">&times;</span>
+            <div class="row">
+                <div class="modal-content col-md-2">
+                    <div id="modalDetails" class="text-center">
+                        <h3><strong>Title:</strong> <span id="modalTitle"></span></h3>
+                        <p><strong>Author:</strong> <span id="modalAuthor"></span></p>
+                        <p><strong>Date:</strong> <span id="modalDate"></span></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img id="modalImage" src="" alt="" style="width: 100%; max-height: 80vh; object-fit: contain;">
+                </div>
+                <div class="col-md-4">
+                    <div class="comment-container">
+                        <h3 class="mb-3">Comments</h3>
+                        <div class="comment-list-container">
+                            <ul class="list-group comment-list">
+                                <li class="list-group-item">
+                                    <span><b><span></span>user: </b><span>comment</span></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <form action="addComment" method="post">
+                            <div class="input-group mt-3">
+                                <input type="text" name="commentText" class="form-control"
+                                       placeholder="Type your comment" required>
+                                <input type="hidden" name="imageId">
+                                <button type="submit" class="btn btn-primary btn-custom">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -56,14 +56,7 @@ body {
 }
 
 .album-table {
-    margin-top: 20px;
-    width: 100%;
     border: 1px solid lightblue;
-}
-
-.select-table {
-    width: 80%;
-    margin: auto;
 }
 
 .table-container,
@@ -74,7 +67,6 @@ body {
     background-color: #fff;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
-    max-width: 400px;
 }
 
 .toggle-form {
@@ -91,11 +83,6 @@ body {
 
 .select-table input[type="checkbox"] {
     transform: scale(1.5);
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
 }
 
 .thumbnail {
@@ -194,4 +181,37 @@ table {
 
 .flex-column {
     flex-direction: column!important;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    margin: 30px;
+    width: 90%;
+    height: 90%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    margin-left: 10px;
+    color: #b91111;
+    float: right;
+    font-size: 50px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: auto;
 }

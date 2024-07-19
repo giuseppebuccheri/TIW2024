@@ -8,12 +8,17 @@ public class Album {
     private String title;
     private Date date;
     private String username;
+    private String authorUsername;
 
     public Album(int id, int author, String title, Date date) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.date = date;
+    }
+
+    public void setAuthorUsername(String authorUsername) {
+        this.authorUsername = authorUsername;
     }
 
     public int getAuthor() {

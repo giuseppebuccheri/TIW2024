@@ -14,18 +14,15 @@ public class AlbumDao {
         this.connection = connection;
     }
 
-    public List<Image> findAlbumImages(int id,int offset) throws SQLException{
+    public List<Image> findAlbumImages(int id) throws SQLException{
         List<Image> images = new ArrayList<Image>();
         String sql = "SELECT * " +
                 "FROM images " +
                 "JOIN album_image ON images.id_image = album_image.image_id " +
                 "WHERE album_id = ? " +
-                "ORDER BY images.date DESC " +
-                "LIMIT 5 " +
-                "OFFSET ?";     //Numero righe da saltare
-        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
+                "ORDER BY images.date DESC ";
+        try (PreparedStatement pstatement = connection.prepareStatement(sql)) {
             pstatement.setInt(1, id);
-            pstatement.setInt(2, offset);
             try (ResultSet result = pstatement.executeQuery();) {
                 while (result.next()) {
                     Image i = new Image(result.getInt("id_image"),

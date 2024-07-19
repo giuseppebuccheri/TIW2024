@@ -9,6 +9,7 @@ public class Image {
     private String description;
     private String path;
     private int idAuthor;
+    private String authorUsername;
 
     public Image(int id, String title, Date date, String description, String path, int idAuthor) {
         this.id = id;
@@ -17,6 +18,10 @@ public class Image {
         this.description = description;
         this.path = path;
         this.idAuthor = idAuthor;
+    }
+
+    public void setAuthorUsername(String authorUsername) {
+        this.authorUsername = authorUsername;
     }
 
     public int getId() {
