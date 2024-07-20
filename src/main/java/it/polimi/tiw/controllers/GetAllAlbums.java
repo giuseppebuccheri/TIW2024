@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.tiw.beans.Album;
 import it.polimi.tiw.beans.Image;
+import it.polimi.tiw.beans.User;
+import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.UserDao;
 
 import javax.servlet.ServletException;
@@ -33,14 +35,21 @@ public class GetAllAlbums extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        String username = (String) session.getAttribute("username");
+        User user = (User) session.getAttribute("user");
+
+        //Test error alert
+//        if (true){
+//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//            response.getWriter().write("Not possible to recover albums, try later");
+//            return;
+//        }
 
         List<Album> albums = null;
-        UserDao userDao = new UserDao(connection);
+        AlbumDao albumDao = new AlbumDao(connection);
 
         try {
-            albums = userDao.findAllAlbums(userDao.getIdByUsername(username));
-            setUsernames(albums, userDao);
+            albums = albumDao.findAllAlbums(user.getId());
+            setUsernames(albums);
         } catch (SQLException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -62,7 +71,9 @@ public class GetAllAlbums extends HttpServlet {
     }
 
 
-    private void setUsernames(List<Album> albums, UserDao dao) {
+    private void setUsernames(List<Album> albums) {
+        UserDao dao = new UserDao(connection);
+
         for(Album a: albums){
             a.setUsername(dao.getUsername(a.getAuthor()));
         }

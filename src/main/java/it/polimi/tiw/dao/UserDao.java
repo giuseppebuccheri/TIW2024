@@ -49,24 +49,6 @@ public class UserDao {
         }
     }
 
-    public List<Album> findUserAlbums(int id) throws SQLException {
-        List<Album> albums = new ArrayList<Album>();
-        String sql = "SELECT * FROM albums WHERE id_author = ?";
-        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
-            pstatement.setInt(1, id);
-            try (ResultSet result = pstatement.executeQuery();) {
-                while (result.next()) {
-                    Album a = new Album(result.getInt("id_album"),
-                            result.getInt("id_author"),
-                            result.getString("title"),
-                            result.getDate("date"));
-                    albums.add(a);
-                }
-            }
-        }
-        return albums;
-    }
-
     public List<Image> findUserImages(int id) throws SQLException{
         List<Image> images = new ArrayList<Image>();
         String sql = "SELECT * FROM images WHERE author = ?";
@@ -86,33 +68,6 @@ public class UserDao {
             }
         }
         return images;
-    }
-
-    public List<Album> findOthersAlbums(int id) throws SQLException {
-        List<Album> albums = new ArrayList<Album>();
-        String sql = "SELECT * FROM albums WHERE id_author <> ?";
-        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
-            pstatement.setInt(1, id);
-            try (ResultSet result = pstatement.executeQuery();) {
-                while (result.next()) {
-                    Album a = new Album(result.getInt("id_album"),
-                            result.getInt("id_author"),
-                            result.getString("title"),
-                            result.getDate("date"));
-                    albums.add(a);
-                }
-            }
-        }
-        return albums;
-    }
-
-
-    public boolean emailValid(String email) {
-        boolean isValid = true;
-
-        //TODO check how to do
-
-        return isValid;
     }
 
     public boolean insertUser(String username, String password, String email) throws ClassNotFoundException, SQLException {
@@ -173,22 +128,5 @@ public class UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public List<Album> findAllAlbums(int id) throws SQLException {
-        List<Album> albums = new ArrayList<Album>();
-        String sql = "SELECT * FROM albums";
-        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
-            try (ResultSet result = pstatement.executeQuery();) {
-                while (result.next()) {
-                    Album a = new Album(result.getInt("id_album"),
-                            result.getInt("id_author"),
-                            result.getString("title"),
-                            result.getDate("date"));
-                    albums.add(a);
-                }
-            }
-        }
-        return albums;
     }
 }

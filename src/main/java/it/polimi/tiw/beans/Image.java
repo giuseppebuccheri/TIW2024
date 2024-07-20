@@ -1,6 +1,7 @@
 package it.polimi.tiw.beans;
 
 import java.util.Date;
+import java.util.List;
 
 public class Image {
     private int id;
@@ -10,6 +11,8 @@ public class Image {
     private String path;
     private int idAuthor;
     private String authorUsername;
+
+    private List<Comment> commentList;
 
     public Image(int id, String title, Date date, String description, String path, int idAuthor) {
         this.id = id;
@@ -22,6 +25,18 @@ public class Image {
 
     public void setAuthorUsername(String authorUsername) {
         this.authorUsername = authorUsername;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+
+    public String getAuthorUsername() {
+        return authorUsername;
+    }
+
+    public List<Comment> getCommentList() {
+        return commentList;
     }
 
     public int getId() {

@@ -51,7 +51,7 @@ public class CreateAlbum extends HttpServlet {
         }
 
         if (!checkParams(title) || selectedImages == null) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write("please provide a title and at least one image");
             return;
         }

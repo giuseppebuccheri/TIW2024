@@ -3,8 +3,11 @@ package it.polimi.tiw.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.tiw.beans.Album;
+import it.polimi.tiw.beans.Comment;
 import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.dao.AlbumDao;
+import it.polimi.tiw.dao.CommentDao;
+import it.polimi.tiw.dao.UserDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -15,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
@@ -37,8 +41,11 @@ public class GetAlbum extends HttpServlet {
         if(request.getParameter("id") != null){
             try {
                 id = Integer.parseInt(request.getParameter("id"));
+                //Test errore
+//                String prova = "dsafa";
+//                id = Integer.parseInt(prova);
             } catch (NumberFormatException | NullPointerException e) {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("Not possible to recover album, try later");
                 return;
             }
@@ -50,22 +57,39 @@ public class GetAlbum extends HttpServlet {
         }
 
         List<Image> albumImages;
-        AlbumDao dao = new AlbumDao(connection);
+        AlbumDao albumDao = new AlbumDao(connection);
+        UserDao userDao = new UserDao(connection);
         Album album;
         String albumcreator;
 
         try {
-            album = dao.getAlbumById(id);
+            album = albumDao.getAlbumById(id);
             if (album == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Album not found");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.getWriter().write("Album not found");
                 return;
             }
-            albumImages = dao.findAlbumImages(id);  //ritorna tutte le immagini
-            album.setAuthorUsername(dao.getAuthorUsernameById(id));
+            albumImages = albumDao.findAlbumImages(id);  //ritorna tutte le immagini
+            album.setAuthorUsername(albumDao.getAuthorUsernameById(id));
         } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in album's project database extraction");
+            response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+            response.getWriter().write("Failure in album's project database extraction");
             return;
+        }
+
+        CommentDao commentDao = new CommentDao(connection);
+        List<Comment> comments = new ArrayList<>();
+
+        for (Image i: albumImages){
+            try {
+                comments = commentDao.findCommentsByImage(i.getId());
+                for (Comment c:comments){
+                    c.setUsername(userDao.getUsername(c.getUser()));
+                }
+                i.setCommentList(comments);     //Aggiungi alle immagini i propri commenti
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();

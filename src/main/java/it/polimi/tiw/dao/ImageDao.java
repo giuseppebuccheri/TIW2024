@@ -14,7 +14,6 @@ public class ImageDao {
         this.connection = connection;
     }
 
-
     public Image getImageById(int id) throws SQLException {
         String sql = "SELECT * FROM images WHERE id_image = ?";
         Image image = null;
@@ -36,18 +35,18 @@ public class ImageDao {
         return image;
     }
 
-    public String getAuthorUsernameById(int id) throws SQLException{
-        String sql = "SELECT users.username FROM images JOIN users ON images.author = users.id_user WHERE id_image = ?";
-        String nick = null;
+    public int getAuthorById(int id) throws SQLException{
+        String sql = "SELECT author FROM images WHERE id_image = ?";
+        int id_author = 0;
         try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
             pstatement.setInt(1, id);
             try (ResultSet result = pstatement.executeQuery();) {
                 if(result.next()) {
-                    nick = result.getString("username");
+                    id_author = result.getInt("author");
                 }
             }
         }
-        return nick;
+        return id_author;
     }
 
     public void deleteImage(int imageId) throws SQLException {
@@ -57,4 +56,5 @@ public class ImageDao {
             pstatement.executeUpdate();
         }
     }
+
 }

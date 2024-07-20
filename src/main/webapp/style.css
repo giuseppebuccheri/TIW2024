@@ -1,20 +1,10 @@
 body {
     background-color: #f8f9fa;
-    height: 100vh;
-    margin: 0;
 }
 
 .container {
     width: 100%;
     max-width: 1800px;
-    padding: 0 15px;
-}
-
-.container-fluid {
-    height: 850px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 .panel {
@@ -35,7 +25,7 @@ body {
     text-align: center;
 }
 
-.login-form,.signup-form {
+.login-form, .signup-form {
     max-width: 400px;
     margin: auto;
     margin-top: 7%;
@@ -43,7 +33,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 5px;
     background-color: #fff;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -92,6 +82,7 @@ body {
     display: block;
     margin: auto;
 }
+
 .button-container {
     text-align: center;
     margin-top: 20px;
@@ -117,101 +108,106 @@ body {
 }
 
 .comment-container {
-    padding-right: 20px;
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
-}
-
-.comment-list {
-    list-style-type: none;
-    padding-left: 0;
-    margin-bottom: 0;
+    max-width: 400px;
+    width: 100%;
+    margin-right: 5px;
 }
 
 .comment-list-container {
-    flex: 1;
-    max-height: 600px;
-    overflow: auto;
+    max-height: 550px;
+    overflow-y: scroll;
+    margin-bottom: 20px;
 }
 
-.list-group-item {
+.comment-list li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
     margin-bottom: 10px;
-}
-
-.input-group {
-    display: flex;
-    align-items: center;
-}
-
-.input-group .form-control {
-    flex: 1;
-}
-
-.input-group .btn-custom {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.input-group .btn-custom:hover {
-    background-color: #0056b3;
-}
-
-.ml-auto {
-    margin-left: auto;
-}
-
-.mt-4 {
-    margin-top: 1.5rem!important;
-}
-
-.d-flex {
-    display: flex!important;
-}
-
-.align-items-center {
-    align-items: center!important;
-}
-
-.justify-content-center {
-    justify-content: center!important;
-}
-
-.flex-column {
-    flex-direction: column!important;
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    margin: 30px;
-    width: 90%;
-    height: 90%;
-    background-color: rgba(0,0,0,0.4);
-}
-
-
-.modal-content {
-    background-color: #fefefe;
-    margin: 5% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
+    background-color: #fff;
 }
 
 .close {
-    margin-left: 10px;
-    color: #b91111;
+    color: red;
     float: right;
-    font-size: 50px;
+    font-size: 28px;
     font-weight: bold;
+    margin-top: 10px;
+    margin-right: 5px;
+    background-color: lightgrey;
+    border-radius: 15%;
+    padding: 5px 11px;
 }
 
 .close:hover,
 .close:focus {
     color: black;
     text-decoration: none;
-    cursor: auto;
+    cursor: pointer;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 80%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+.modal-header {
+    padding: 2px 16px;
+    color: white;
+}
+
+.modal-body {padding: 2px 16px;}
+
+
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+.image-section {
+    margin-right: 20px;
+}
+
+.image-section img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.btn-custom {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
 }

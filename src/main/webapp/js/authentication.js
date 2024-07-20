@@ -82,7 +82,6 @@
                     var message = JSON.parse(request.responseText);
                     sessionStorage.setItem('id', message.id);
                     sessionStorage.setItem('username', message.username);
-                    sessionStorage.setItem('email', message.email);
                     window.location.href = "home.html";
                     break;
 
