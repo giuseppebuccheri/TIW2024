@@ -3,7 +3,6 @@ package it.polimi.tiw.controllers;
 import it.polimi.tiw.beans.Album;
 import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.beans.User;
-import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.UserDao;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -25,7 +24,7 @@ import java.util.List;
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
 
 @WebServlet("/home")
-public class HomePage extends HttpServlet {
+public class GoToHome extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
@@ -44,7 +43,6 @@ public class HomePage extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        //String username = (String) session.getAttribute("username");
         User user = (User) session.getAttribute("user");
         int id = user.getId();
 

@@ -27,7 +27,10 @@ public class UserDao {
                     return null;
                 } else {
                     resultSet.next();
-                    User user = new User(resultSet.getInt("id_user"), resultSet.getString("email"), resultSet.getString("username"), resultSet.getString("password"));
+                    User user = new User(resultSet.getInt("id_user"),
+                            resultSet.getString("email"),
+                            resultSet.getString("username"),
+                            resultSet.getString("password"));
                     return user;
                 }
             }
@@ -108,10 +111,10 @@ public class UserDao {
         return albums;
     }
 
-    public boolean insertUser(String username, String password, String email) throws ClassNotFoundException, SQLException {
-        boolean isValid = false;
+    public User insertUser(String username, String password, String email) throws ClassNotFoundException, SQLException {
 
         String sql = "INSERT INTO users (username, password,email) VALUES (?, ?,?)";
+        User user = null;
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, username);
@@ -119,14 +122,13 @@ public class UserDao {
             statement.setString(3, email);
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected > 0) {
-                isValid = true;
+                user = checkUser(username,password);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-
-        return isValid;
+        return user;
     }
 
     public boolean isNew(String username) throws ClassNotFoundException, SQLException {

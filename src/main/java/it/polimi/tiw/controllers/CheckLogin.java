@@ -22,7 +22,7 @@ import it.polimi.tiw.utils.ConnectionHandler;
 import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
 @WebServlet("/login")
-public class Login extends HttpServlet {
+public class CheckLogin extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private TemplateEngine templateEngine = null;
     private Connection connection = null;

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDao;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
@@ -70,9 +71,10 @@ public class Signup extends HttpServlet {
             if (dao.isNew(username)) {
                 if (repeat.equals(password)){
                     if (emailValid(email)){
-                        if (dao.insertUser(username,password,email)){
+                        User user = dao.insertUser(username,password,email);
+                        if (user != null){
                             HttpSession session = request.getSession();
-                            session.setAttribute("username", username);
+                            session.setAttribute("user", user);
 
                             response.sendRedirect("home");
                         }

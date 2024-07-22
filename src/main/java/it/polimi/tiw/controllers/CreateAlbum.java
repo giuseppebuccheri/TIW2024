@@ -4,7 +4,6 @@ import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.UserDao;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
 import static it.polimi.tiw.utils.ParamsChecker.checkParams;
@@ -61,14 +59,13 @@ public class CreateAlbum extends HttpServlet {
             return;
         }
 
-        UserDao userDao = new UserDao(connection);
-        AlbumDao albumDaodao = new AlbumDao(connection);
+        AlbumDao dao = new AlbumDao(connection);
         try {
-            int album_id = albumDaodao.createAlbum(user.getId(),title,date);
+            int album_id = dao.createAlbum(user.getId(),title,date);
             if (selectedImages != null) {
                 for (String imageId : selectedImages) {
                     try {
-                        albumDaodao.addImageToAlbum(Integer.parseInt(imageId), album_id);
+                        dao.addImageToAlbum(Integer.parseInt(imageId), album_id);
                     } catch (Exception e) {
                         response.sendRedirect("home");
                         return;
