@@ -53,7 +53,6 @@ public class Login extends HttpServlet {
 
         UserDao dao = new UserDao(connection);
         User user = null;
-        int id = dao.getIdByUsername(username);
 
         try {
             user = dao.checkUser(username, password);

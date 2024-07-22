@@ -35,20 +35,12 @@ public class Signup extends HttpServlet {
         String repeat = request.getParameter("repeat");
         String email = request.getParameter("email");
 
-        System.out.println("ricevuti");
-        System.out.println(username);
-        System.out.println(password);
-        System.out.println(repeat);
-        System.out.println(email);
-
         if (!checkParams(username) || !checkParams(username) || !checkParams(repeat) ||!checkParams(email)) {
             String errorMessage = "Incorrect or missing values";
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write(errorMessage);
             return;
         }
-
-        System.out.println("buoni");
 
         UserDao dao = new UserDao(connection);
 
@@ -88,14 +80,14 @@ public class Signup extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req,resp);
+    }
+
     public boolean emailValid(String email) {
         Pattern p = Pattern.compile(".+@.+\\.[a-z]+", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(email);
         return m.matches();
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req,resp);
     }
 }

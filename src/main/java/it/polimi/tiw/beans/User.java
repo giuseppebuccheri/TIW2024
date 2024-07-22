@@ -5,6 +5,15 @@ public class User {
     private String email;
     private String username;
     private String password;
+    private String order;
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
+    }
 
     public User(int id, String email, String username, String password) {
         this.id = id;

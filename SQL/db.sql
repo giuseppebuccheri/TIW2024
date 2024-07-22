@@ -54,6 +54,7 @@ CREATE TABLE `albums` (
   `id_author` int NOT NULL,
   `title` varchar(255) NOT NULL,
   `date` date NOT NULL,
+  `imagesOrder` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id_album`),
   UNIQUE KEY `albums_pk` (`title`),
   KEY `id_author` (`id_author`),
@@ -67,7 +68,7 @@ CREATE TABLE `albums` (
 
 LOCK TABLES `albums` WRITE;
 /*!40000 ALTER TABLE `albums` DISABLE KEYS */;
-INSERT INTO `albums` (`id_album`, `id_author`, `title`, `date`) VALUES (1,1,'holidays','2024-07-12'),(2,2,'trips','2028-07-06'),(3,4,'italy','2020-07-04'),(4,1,'test','2024-07-12'),(5,1,'food','2024-07-12'),(6,1,'football','2024-07-12'),(7,2,'movies','2020-10-28'),(8,1,'Vacation','2023-06-15'),(9,2,'Birthday Party','2023-08-20'),(10,3,'Wedding','2022-09-30'),(11,4,'Graduation','2021-07-10'),(12,5,'Hiking Trip','2023-05-12'),(13,6,'Christmas','2022-12-25'),(14,7,'Family Reunion','2021-11-02'),(15,1,'New Year','2023-01-01'),(16,2,'Beach Day','2023-04-18'),(17,3,'Concert','2023-07-05'),(18,4,'Art Gallery','2023-03-14'),(19,5,'Road Trip','2023-02-28'),(20,6,'Halloween','2022-10-31'),(21,7,'Easter','2023-04-09'),(22,1,'Spring Festival','2023-05-05'),(23,2,'Autumn Leaves','2022-11-15'),(24,3,'City Tour','2022-09-22'),(25,4,'Museum Visit','2023-06-20'),(26,5,'Picnic','2023-07-25'),(27,6,'Zoo Trip','2023-08-14');
+INSERT INTO `albums` (`id_album`, `id_author`, `title`, `date`, `imagesOrder`) VALUES (1,1,'holidays','2024-07-12',NULL),(2,2,'trips','2028-07-06',NULL),(3,4,'italy','2020-07-04',NULL),(4,1,'test','2024-07-12',NULL),(5,1,'food','2024-07-12',NULL),(6,1,'football','2024-07-12',NULL),(7,2,'movies','2020-10-28',NULL),(8,1,'Vacation','2023-06-15',NULL),(9,2,'Birthday Party','2023-08-20',NULL),(10,3,'Wedding','2022-09-30',NULL),(11,4,'Graduation','2021-07-10',NULL),(12,5,'Hiking Trip','2023-05-12',NULL),(13,6,'Christmas','2022-12-25',NULL),(14,7,'Family Reunion','2021-11-02',NULL),(15,1,'New Year','2023-01-01',NULL),(16,2,'Beach Day','2023-04-18',NULL),(17,3,'Concert','2023-07-05',NULL),(18,4,'Art Gallery','2023-03-14',NULL),(19,5,'Road Trip','2023-02-28',NULL),(20,6,'Halloween','2022-10-31',NULL),(21,7,'Easter','2023-04-09',NULL),(22,1,'Spring Festival','2023-05-05',NULL),(23,2,'Autumn Leaves','2022-11-15',NULL),(24,3,'City Tour','2022-09-22',NULL),(25,4,'Museum Visit','2023-06-20',NULL),(26,5,'Picnic','2023-07-25',NULL),(27,6,'Zoo Trip','2023-08-14',NULL);
 /*!40000 ALTER TABLE `albums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -82,10 +83,13 @@ CREATE TABLE `comments` (
   `id_comment` int NOT NULL AUTO_INCREMENT,
   `text` varchar(50) NOT NULL,
   `image` int NOT NULL,
-  `user` int DEFAULT NULL,
+  `user` int NOT NULL,
   PRIMARY KEY (`id_comment`),
   KEY `image` (`image`),
-  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`image`) REFERENCES `images` (`id_image`)
+  KEY `comments_users_id_user_fk` (`user`),
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`image`) REFERENCES `images` (`id_image`),
+  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`),
+  CONSTRAINT `comments_users_id_user_fk` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -143,7 +147,7 @@ CREATE TABLE `users` (
   `password` varchar(45) NOT NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -152,7 +156,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`id_user`, `email`, `username`, `password`) VALUES (1,'admin','admin','pwd'),(2,'45@gmail.com','elly','444'),(3,'dsadsa@gmail.com','john','1'),(4,'fsafoa@gmail.com','marshall','sas'),(5,'dasdasfff@gmail.com','ted','1'),(6,'4aasdsadasd5@gmail.com','robert','w'),(7,'dd@sada.it','walter','s'),(8,'45@gmail.comd','d','d'),(10,'sqgzaqwgczwtrxvwtq@ytnhy.com','ddd','a');
+INSERT INTO `users` (`id_user`, `email`, `username`, `password`) VALUES (1,'admin','admin','pwd'),(2,'45@gmail.com','elly','444'),(3,'dsadsa@gmail.com','john','1'),(4,'fsafoa@gmail.com','marshall','sas'),(5,'dasdasfff@gmail.com','ted','1'),(6,'4aasdsadasd5@gmail.com','robert','w'),(7,'dd@sada.it','walter','s'),(8,'45@gmail.comd','d','d'),(10,'sqgzaqwgczwtrxvwtq@ytnhy.com','ddd','a'),(11,'dsadsads@ddsd.dsad','fff','fff'),(12,'d@d.d','dad','dad');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -165,4 +169,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-20 15:51:20
+-- Dump completed on 2024-07-22 16:59:57

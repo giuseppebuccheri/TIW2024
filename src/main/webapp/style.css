@@ -211,3 +211,12 @@ body {
 .btn-custom:hover {
     background-color: #0056b3;
 }
+
+.draggable{
+    font-size: 30px;
+    cursor: move;
+}
+
+.draggable.dragging{
+    opacity: 0.5;
+}

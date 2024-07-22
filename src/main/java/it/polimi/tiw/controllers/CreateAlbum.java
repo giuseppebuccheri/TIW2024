@@ -41,18 +41,9 @@ public class CreateAlbum extends HttpServlet {
         Date date = new java.sql.Date(new java.util.Date().getTime());
         String[] selectedImages = request.getParameterValues("images");
 
-        System.out.println("Title: " + title);
-        if (selectedImages != null) {
-            for (String s : selectedImages) {
-                System.out.println("Selected image: " + s);
-            }
-        } else {
-            System.out.println("No images selected");
-        }
-
         if (!checkParams(title) || selectedImages == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("please provide a title and at least one image");
+            response.getWriter().println("please provide a title and at least one image");
             return;
         }
 

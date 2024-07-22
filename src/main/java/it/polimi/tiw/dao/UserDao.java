@@ -1,6 +1,5 @@
 package it.polimi.tiw.dao;
 
-import it.polimi.tiw.beans.Album;
 import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.beans.User;
 
@@ -31,22 +30,6 @@ public class UserDao {
             }
         }
 
-    }
-
-    public int getIdByUsername(String username) {
-        String sql = "SELECT id_user FROM users WHERE username = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, username);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getInt("id_user");
-                } else {
-                    return 0;
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public List<Image> findUserImages(int id) throws SQLException{
@@ -114,7 +97,7 @@ public class UserDao {
         return isValid;
     }
 
-    public String getUsername(int id) {
+    public String getUsernameById(int id) {
         String sql = "SELECT username FROM users WHERE id_user = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
@@ -129,4 +112,5 @@ public class UserDao {
             throw new RuntimeException(e);
         }
     }
+
 }

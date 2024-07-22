@@ -12,6 +12,7 @@ public class Image {
     private int idAuthor;
     private String authorUsername;
 
+    //Serve per passare tutti i commenti di un immagine in una sola chiamta
     private List<Comment> commentList;
 
     public Image(int id, String title, Date date, String description, String path, int idAuthor) {

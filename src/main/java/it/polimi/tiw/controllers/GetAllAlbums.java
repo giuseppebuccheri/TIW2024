@@ -3,7 +3,6 @@ package it.polimi.tiw.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.tiw.beans.Album;
-import it.polimi.tiw.beans.Image;
 import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.UserDao;
@@ -48,7 +47,7 @@ public class GetAllAlbums extends HttpServlet {
         AlbumDao albumDao = new AlbumDao(connection);
 
         try {
-            albums = albumDao.findAllAlbums(user.getId());
+            albums = albumDao.findAllAlbums();
             setUsernames(albums);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,7 +74,7 @@ public class GetAllAlbums extends HttpServlet {
         UserDao dao = new UserDao(connection);
 
         for(Album a: albums){
-            a.setUsername(dao.getUsername(a.getAuthor()));
+            a.setUsername(dao.getUsernameById(a.getAuthor()));
         }
     }
 }

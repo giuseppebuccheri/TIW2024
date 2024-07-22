@@ -3,9 +3,10 @@
         var userAlbumsTable, othersAlbumsTable;
         var presentation;
         var currentAlbumImages = [];
-        var images = [];
+        var images = [];        //Tutte le immagini dell'album corrente
+        var order = [];        //Ordine immagini album corrente
+        var order = [];        //Ordine immagini album corrente
         var currentOffset = 0;
-        var itemsPerPage = 5;
         var serverError = document.getElementById("serverError");
 
         //al caricamento della pagina
@@ -29,6 +30,7 @@
             );
 
             serverError.style.display = "none";
+            document.getElementById("saveOrderButton").style.visibility = "none";
 
             //Prendi gli album dal server con AJAX
             loadAlbums();
@@ -66,14 +68,14 @@
 
             //Mostra tasto previous
             document.getElementById('prevButton').addEventListener('click', () => {
-                currentOffset -= itemsPerPage;
+                currentOffset -= 5;
                 displayImages(images);
             });
 
 
             //Mostra tasto next
             document.getElementById('nextButton').addEventListener('click', () => {
-                currentOffset += itemsPerPage;
+                currentOffset += 5;
                 displayImages(images);
             });
 
@@ -113,6 +115,8 @@
                     this.listcontainerbody.innerHTML = "";
 
                     let self = this;
+
+                    //riordina in ordine decrescente di data
                     albums.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                     albums.forEach(function (album) {
@@ -137,19 +141,34 @@
                         button.setAttribute('albumId', album.id);
                         button.addEventListener("click", (e) => {
                             e.preventDefault();
-                            makeGet("album?id=" + album.id, (req) => {
-                                if (req.readyState === XMLHttpRequest.DONE) {
-                                    if (req.status === 200) {
+                            makeGet("album?id=" + album.id, (request) => {
+                                if (request.readyState === XMLHttpRequest.DONE) {
+                                    if (request.status === 200) {
                                         serverError.style.display = "none";
 
-                                        images = JSON.parse(req.responseText);  //Prendo tutte le immagini
-                                        document.getElementById("albumTile").textContent = album.title;
+                                        images = JSON.parse(request.responseText);  //Prendo tutte le immagini (var globale)
+                                        document.getElementById("albumTitle").textContent = album.title;
                                         document.getElementById("albumCreator").textContent = album.authorUsername;
                                         document.getElementById("albumDate").textContent = album.date;
                                         currentOffset = 0;
+
+                                        if(album.imagesOrder === null){
+                                            //riordina in ordine decrescente di data
+                                            var i = 0;
+                                            images.sort((a, b) => new Date(b.date) - new Date(a.date));
+                                            images.forEach(image =>{
+                                                order[i] = image.id;
+                                                i++;
+                                            })
+                                        }
+                                        else {
+                                            //carica ordine
+                                            order = album.imagesOrder.split(',').map(id => parseInt(id, 10));
+                                        }
+
                                         displayImages(images);
                                     } else {
-                                        serverError.textContent = "Server error [" + req.status + "]: " + req.responseText;
+                                        serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                                         serverError.style.display = "block";
                                     }
                                 }
@@ -169,13 +188,12 @@
 
         //Funzioni di callback
 
-        function handleAlbums(req) {
-            if (req.readyState === XMLHttpRequest.DONE) {
-                if (req.status === 200) {
+        function handleAlbums(request) {
+            if (request.readyState === XMLHttpRequest.DONE) {
+                if (request.status === 200) {
                     serverError.style.display = "none";
 
-                    let allAlbums = JSON.parse(req.responseText);
-                    console.log(allAlbums);
+                    let allAlbums = JSON.parse(request.responseText);
 
                     let username = sessionStorage.getItem('username');
 
@@ -186,7 +204,7 @@
                     userAlbumsTable.show(userAlbums);
                     othersAlbumsTable.show(otherAlbums);
                 } else {
-                    serverError.textContent = "Server error [" + req.status + "]: " + req.responseText;
+                    serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                     serverError.style.display = "block";
                 }
             }
@@ -222,19 +240,19 @@
                     newButton.setAttribute('albumId', newAlbum.id);
                     newButton.addEventListener("click", (e) => {
                         e.preventDefault();
-                        makeGet("album?id=" + newAlbum.id, (req) => {
-                            if (req.readyState === XMLHttpRequest.DONE) {
-                                if (req.status === 200) {
+                        makeGet("album?id=" + newAlbum.id, (request) => {
+                            if (request.readyState === XMLHttpRequest.DONE) {
+                                if (request.status === 200) {
                                     serverError.style.display = "none";
 
-                                    images = JSON.parse(req.responseText);  //Prendo tutte le immagini
+                                    images = JSON.parse(request.responseText);  //Prendo tutte le immagini
                                     document.getElementById("albumTile").textContent = newAlbum.title;
                                     document.getElementById("albumCreator").textContent = newAlbum.authorUsername;
                                     document.getElementById("albumDate").textContent = newAlbum.date;
                                     currentOffset = 0;
                                     displayImages(images);
                                 } else {
-                                    serverError.textContent = "Server error [" + req.status + "]: " + req.responseText;
+                                    serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                                     serverError.style.display = "block";
                                 }
                             }
@@ -252,18 +270,18 @@
                     document.getElementById('toggle').textContent = "Create new album";
                     document.getElementById('createAlbumFormContainer').style.display = "none";
                 } else {
-                    serverError.textContent = "Server error [" + req.status + "]: " + req.responseText;
+                    serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                     serverError.style.display = "block";
                 }
             }
         }
 
-        function insertList(req) {
-            if (req.readyState === XMLHttpRequest.DONE) {
-                if (req.status === 200) {
+        function insertList(request) {
+            if (request.readyState === XMLHttpRequest.DONE) {
+                if (request.status === 200) {
                     serverError.style.display = "none";
 
-                    let images = JSON.parse(req.responseText);
+                    let images = JSON.parse(request.responseText);
                     let imagesContainer = document.getElementById("userImages");
                     imagesContainer.innerHTML = "";
                     images.forEach(image => {
@@ -284,7 +302,7 @@
                         imagesContainer.appendChild(row);
                     });
                 } else {
-                    serverError.textContent = "Server error [" + req.status + "]: " + req.responseText;
+                    serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                     serverError.style.display = "block";
                 }
             }
@@ -303,12 +321,12 @@
                 albumImagesDiv.style.display = "none";
             }
 
-            // Clear existing images but keep prev and next buttons
+            //rimuovo tutte le celle tranne i bottoni
             while (imageRow.childElementCount > 2) {
                 imageRow.removeChild(imageRow.children[1]);
             }
 
-            currentAlbumImages = images.slice(currentOffset, currentOffset + itemsPerPage);
+            currentAlbumImages = images.slice(currentOffset, currentOffset + 5);
 
             currentAlbumImages.forEach(image => {
 
@@ -331,38 +349,59 @@
 
                 let title = document.createElement("span");
                 title.textContent = image.title;
+                title.draggable = true;
+                title.classList.add("draggable");
+
                 card.appendChild(title);
 
                 img.addEventListener('mouseenter', () => {
                     showModal(image);
                 });
 
+                //Inserisco a partire dalla seconda posizione in ordine decrescente
                 imageRow.insertBefore(cell, imageRow.children[imageRow.childElementCount - 1]);
             });
 
-            let emptyCellsToAdd = itemsPerPage - currentAlbumImages.length;
+            var draggables = document.querySelectorAll(".draggable");
+            draggables.forEach(draggable => {
+                draggable.addEventListener("dragstart", ()=>{
+                    draggable.classList.add("dragging");
+                })
+
+                draggable.addEventListener("dragover",(e)=>{
+                    e.preventDefault();
+                    draggable.classList.remove("dragging");
+                });
+
+                //todo dragover e swapping. esempio ordine nella tabella db -> "1,2,3,4,5".
+            });
+
+            //Genero celle vuote se necessario
+            let emptyCellsToAdd = 5 - currentAlbumImages.length;
             for (let i = 0; i < emptyCellsToAdd; i++) {
                 let emptyCell = document.createElement("td");
                 emptyCell.style.width = "20%";
                 imageRow.insertBefore(emptyCell, imageRow.children[imageRow.childElementCount - 1]);
             }
 
+
+
             albumImagesContainer.style.display = "block";
 
             document.getElementById('prevButton').style.display = currentOffset > 0 ? "table-cell" : "none";
-            document.getElementById('nextButton').style.display = currentOffset + itemsPerPage < images.length ? "table-cell" : "none";
+            document.getElementById('nextButton').style.display = currentOffset + 5 < images.length ? "table-cell" : "none";
 
             //Funzioni finestra modale
 
             var closeButton = document.getElementById("closeImage");
             var commentsList = document.getElementById("commentsList");
 
-            function addComment(req) {
-                if (req.readyState === XMLHttpRequest.DONE) {
-                    if (req.status === 200) {
+            function addComment(request) {
+                if (request.readyState === XMLHttpRequest.DONE) {
+                    if (request.status === 200) {
                         serverError.style.display = "none";
 
-                        let comment = JSON.parse(req.responseText);
+                        let comment = JSON.parse(request.responseText);
                         var commentsList = document.getElementById("commentsList");
                         let listItem = document.createElement("li");
 
@@ -377,7 +416,7 @@
                         document.getElementById("commentText").placeholder = "Type your comment";
                         commentsList.style.display = "block";
                     } else {
-                        serverError.textContent = "Server error [" + req.status + "]: " + req.responseText;
+                        serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                         serverError.style.display = "block";
                     }
                 }
@@ -386,7 +425,8 @@
             function showModal(image) {
                 document.getElementById("modalImage").src = image.path;
                 document.getElementById("modalTitle").textContent = image.title;
-                document.getElementById("modalAuthor").textContent = image.idAuthor;
+                document.getElementById("modalDescription").textContent = image.description;
+                document.getElementById("modalAuthor").textContent = image.authorUsername;
                 document.getElementById("modalDate").textContent = image.date;
 
                 var deleteContainer = document.getElementById("deleteImageContainer");
@@ -399,9 +439,9 @@
                     const data = new FormData(form);
                     data.append("imageId",image.id);
 
-                    makePost("deleteImage",data,(req) => {
-                        if (req.readyState === XMLHttpRequest.DONE) {
-                            if (req.status === 200) {
+                    makePost("deleteImage",data,(request) => {
+                        if (request.readyState === XMLHttpRequest.DONE) {
+                            if (request.status === 200) {
                                 serverError.style.display = "none";
 
                                 hideModal();
@@ -412,7 +452,7 @@
                                 })
                                 displayImages(images);
                             } else {
-                                serverError.textContent = "Server error [" + req.status + "]: " + req.responseText;
+                                serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                                 serverError.style.display = "block";
                                 hideModal();
                             }
@@ -420,6 +460,8 @@
                     });
                 });
 
+
+                //Mostra commenti
                 var comments = image.commentList;
 
                 commentsList.innerHTML = "";
@@ -430,13 +472,14 @@
                     commentsList.appendChild(listItem);
                 });
 
+                //Form aggiungi commento
                 document.getElementById('addCommentButton').addEventListener('click', function (event) {
                     event.preventDefault();
 
                     let form = document.getElementById("addCommentForm");
                     const data = new FormData(form);
 
-                    // Controllo input testo
+                    // Controllo input testo lato client
                     if (document.getElementById('commentText').value.trim() === "") {
                         alert("Comment cannot be empty!");
                         return;

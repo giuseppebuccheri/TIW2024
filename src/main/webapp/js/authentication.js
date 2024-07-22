@@ -45,23 +45,23 @@
             }
         }
 
-        //Controlli corrispondenza e validità email lato client
+        //Controlli corrispondenza password e validità sintattica email lato client
 
-        if (password === repeatPassword && isValidEmail(email)){
+        if (password === repeatPassword && isValidEmail(email)) {
             makePost(url, form);
             return;
         }
 
-        if(password != null && repeatPassword!= null && email!= null){
-            if (password !== repeatPassword && !isValidEmail(email)){
+        if (password != null && repeatPassword != null && email != null) {
+            if (password !== repeatPassword && !isValidEmail(email)) {
                 document.getElementById("errorMessage").textContent = "Invalid email format and passwords do not match.";
                 return;
             }
-            if (password !== repeatPassword){
+            if (password !== repeatPassword) {
                 document.getElementById("errorMessage").textContent = "Passwords do not match.";
                 return;
             }
-            if (!isValidEmail(email)){
+            if (!isValidEmail(email)) {
                 document.getElementById("errorMessage").textContent = "Invalid email format.";
             }
         }
@@ -77,28 +77,14 @@
 
     function showResults() {
         if (request.readyState === XMLHttpRequest.DONE) {
-            switch (request.status) {
-                case 200:
-                    var message = JSON.parse(request.responseText);
-                    sessionStorage.setItem('id', message.id);
-                    sessionStorage.setItem('username', message.username);
-                    window.location.href = "home.html";
-                    break;
-
-                case 400: // bad request
-                    var message = request.responseText;
-                    document.getElementById("errorMessage").textContent = message;
-                    break;
-
-                case 401: // unauthorized
-                    var message = request.responseText;
-                    document.getElementById("errorMessage").textContent = message;
-                    break;
-
-                case 500: // server error
-                    var message = request.responseText;
-                    document.getElementById("errorMessage").textContent = message;
-                    break;
+            if (request.status === 200) {
+                var message = JSON.parse(request.responseText);
+                sessionStorage.setItem('id', message.id);
+                sessionStorage.setItem('username', message.username);
+                window.location.href = "home.html";
+            } else {
+                var message = request.responseText;
+                document.getElementById("errorMessage").textContent = message;
             }
         }
     }

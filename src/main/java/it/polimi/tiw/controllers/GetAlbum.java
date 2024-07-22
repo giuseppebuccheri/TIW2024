@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
@@ -77,14 +76,17 @@ public class GetAlbum extends HttpServlet {
             return;
         }
 
+        //Ritorno subito anche i commenti
+
         CommentDao commentDao = new CommentDao(connection);
-        List<Comment> comments = new ArrayList<>();
+        List<Comment> comments;
 
         for (Image i: albumImages){
             try {
+                i.setAuthorUsername(userDao.getUsernameById(i.getIdAuthor()));
                 comments = commentDao.findCommentsByImage(i.getId());
                 for (Comment c:comments){
-                    c.setUsername(userDao.getUsername(c.getUser()));
+                    c.setUsername(userDao.getUsernameById(c.getUser()));
                 }
                 i.setCommentList(comments);     //Aggiungi alle immagini i propri commenti
             } catch (SQLException e) {

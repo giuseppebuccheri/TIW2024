@@ -14,7 +14,7 @@ public class AlbumDao {
         this.connection = connection;
     }
 
-    public List<Album> findAllAlbums(int id) throws SQLException {
+    public List<Album> findAllAlbums() throws SQLException {
         List<Album> albums = new ArrayList<Album>();
         String sql = "SELECT * FROM albums";
         try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
@@ -75,23 +75,6 @@ public class AlbumDao {
         return album;
     }
 
-    public int getAlbumIdByTitle(String title) throws SQLException {
-        String sql = "SELECT id_album FROM albums WHERE title = ?";
-        int id = 0;
-        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
-            pstatement.setString(1, title);
-            try (ResultSet result = pstatement.executeQuery();) {
-                if (result.next()) {
-                    id = result.getInt("id_album");
-                }
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Error while fetching album ID by title: " + e.getMessage());
-        }
-        return id;
-    }
-
-
     public String getAuthorUsernameById(int id) throws SQLException{
         String sql = "SELECT users.username FROM albums JOIN users ON albums.id_author = users.id_user WHERE id_album = ?";
         String nick = null;
@@ -143,18 +126,5 @@ public class AlbumDao {
             pstatement.setInt(2, image_id);
             pstatement.executeUpdate();
         }
-    }
-
-    public int countAlbumImages(int albumId) throws SQLException {
-        String sql = "SELECT COUNT(*) AS total FROM album_image WHERE album_id = ?";
-        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
-            pstatement.setInt(1, albumId);
-            try (ResultSet result = pstatement.executeQuery();) {
-                if (result.next()) {
-                    return result.getInt("total");
-                }
-            }
-        }
-        return 0;
     }
 }
