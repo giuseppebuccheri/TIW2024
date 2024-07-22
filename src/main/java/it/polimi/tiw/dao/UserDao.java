@@ -38,22 +38,6 @@ public class UserDao {
 
     }
 
-    public int getIdByUsername(String username) {
-        String sql = "SELECT id_user FROM users WHERE username = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, username);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getInt("id_user");
-                } else {
-                    return 0;
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public List<Album> findUserAlbums(int id) throws SQLException {
         List<Album> albums = new ArrayList<Album>();
         String sql = "SELECT * FROM albums WHERE id_author = ?";

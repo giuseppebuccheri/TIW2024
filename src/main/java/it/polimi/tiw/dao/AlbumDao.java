@@ -61,22 +61,6 @@ public class AlbumDao {
         return album;
     }
 
-    public int getAlbumIdByTitle(String title) throws SQLException {
-        String sql = "SELECT id_album FROM albums WHERE title = ?";
-        int id = 0;
-        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
-            pstatement.setString(1, title);
-            try (ResultSet result = pstatement.executeQuery();) {
-                if (result.next()) {
-                    id = result.getInt("id_album");
-                }
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Error while fetching album ID by title: " + e.getMessage());
-        }
-        return id;
-    }
-
 
     public String getAuthorUsernameById(int id) throws SQLException{
         String sql = "SELECT users.username FROM albums JOIN users ON albums.id_author = users.id_user WHERE id_album = ?";

@@ -2,6 +2,7 @@ package it.polimi.tiw.controllers;
 
 import it.polimi.tiw.beans.Comment;
 import it.polimi.tiw.beans.Image;
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.CommentDao;
 import it.polimi.tiw.dao.ImageDao;
 import it.polimi.tiw.dao.UserDao;
@@ -45,7 +46,7 @@ public class GetImage extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
-        String username= (String) session.getAttribute("username");
+        User user= (User) session.getAttribute("user");
 
         int id = 0;
 
@@ -78,7 +79,6 @@ public class GetImage extends HttpServlet {
             return;
         }
 
-        int userId = userDao.getIdByUsername(username);
 
         //Thymeleaf
         String path = "/WEB-INF/image.html";
@@ -87,7 +87,7 @@ public class GetImage extends HttpServlet {
         ctx.setVariable("image", image);
         ctx.setVariable("comments", comments);
         ctx.setVariable("imageauthor", imageauthor);
-        ctx.setVariable("userId", userId);
+        ctx.setVariable("userId", user.getId());
         templateEngine.process(path, ctx, response.getWriter());
     }
 
