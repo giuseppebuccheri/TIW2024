@@ -23,7 +23,8 @@ public class AlbumDao {
                     Album a = new Album(result.getInt("id_album"),
                             result.getInt("id_author"),
                             result.getString("title"),
-                            result.getDate("date"));
+                            result.getDate("date"),
+                            result.getString("imagesOrder"));
                     albums.add(a);
                 }
             }
@@ -67,7 +68,8 @@ public class AlbumDao {
                             result.getInt("id_album"),
                             result.getInt("id_author"),
                             result.getString("title"),
-                            result.getDate("date")
+                            result.getDate("date"),
+                            result.getString("imagesOrder")
                     );
                 }
             }
@@ -124,6 +126,15 @@ public class AlbumDao {
         try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
             pstatement.setInt(1, album_id);
             pstatement.setInt(2, image_id);
+            pstatement.executeUpdate();
+        }
+    }
+
+    public void addOrder(int id, String order) throws SQLException {
+        String sql = "UPDATE albums SET imagesOrder = ? WHERE id_album = ?";
+        try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
+            pstatement.setString(1, order);
+            pstatement.setInt(2, id);
             pstatement.executeUpdate();
         }
     }

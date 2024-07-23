@@ -4,8 +4,8 @@
         var presentation;
         var currentAlbumImages = [];
         var images = [];        //Tutte le immagini dell'album corrente
-        var order = [];        //Ordine immagini album corrente
-        var order = [];        //Ordine immagini album corrente
+        var order = [];        //Ordine di tutte le immagini dell'album corrente
+        var originalOrder = [];
         var currentOffset = 0;
         var serverError = document.getElementById("serverError");
 
@@ -72,13 +72,11 @@
                 displayImages(images);
             });
 
-
             //Mostra tasto next
             document.getElementById('nextButton').addEventListener('click', () => {
                 currentOffset += 5;
                 displayImages(images);
             });
-
 
         }, false);
 
@@ -113,6 +111,7 @@
 
                 } else {
                     this.listcontainerbody.innerHTML = "";
+                    this.listcontainer.style.display = "table";
 
                     let self = this;
 
@@ -120,6 +119,7 @@
                     albums.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                     albums.forEach(function (album) {
+
                         row = document.createElement("tr");
 
                         // titolo
@@ -147,26 +147,101 @@
                                         serverError.style.display = "none";
 
                                         images = JSON.parse(request.responseText);  //Prendo tutte le immagini (var globale)
+
                                         document.getElementById("albumTitle").textContent = album.title;
-                                        document.getElementById("albumCreator").textContent = album.authorUsername;
+                                        document.getElementById("albumCreator").textContent = album.authorUsername;     //todo non va
                                         document.getElementById("albumDate").textContent = album.date;
                                         currentOffset = 0;
 
-                                        if(album.imagesOrder === null){
-                                            //riordina in ordine decrescente di data
-                                            var i = 0;
-                                            images.sort((a, b) => new Date(b.date) - new Date(a.date));
-                                            images.forEach(image =>{
-                                                order[i] = image.id;
-                                                i++;
-                                            })
-                                        }
-                                        else {
-                                            //carica ordine
+                                        order = [];
+
+                                        //Stabilisco ordine immagini
+                                        if (album.imagesOrder === null || album.imagesOrder === undefined) {
+                                            // Riordina in ordine decrescente di data
+                                            for (i = 0; i < images.length; i++)
+                                                order[i] = images[i].id;
+                                            console.log('Order (default):', order);
+                                        } else {
+                                            // Carica ordine dal campo imagesOrder
                                             order = album.imagesOrder.split(',').map(id => parseInt(id, 10));
+                                            console.log('Order (from database):', order);
                                         }
 
+                                        originalOrder = [...order];
+
                                         displayImages(images);
+
+                                        document.getElementById("closeAlbum").onclick = function () {
+                                            document.getElementById('toggle').style.display = "block";
+                                            albumImagesDiv.style.display = "none";
+                                            document.getElementById('editOrderContainer').style.display = "none";
+                                            document.getElementById('serverError').style.display = "none";
+                                            //riabilita bottoni
+                                            document.querySelectorAll(".btn-info").forEach(button=>{
+                                                button.disabled = false;
+                                            });
+                                        }
+
+                                        document.getElementById("editOrderButton").style.display = "block";
+                                        document.getElementById("saveOrderButton").style.display = "none";
+
+                                        document.getElementById('editOrderButton').addEventListener('click', () => {
+                                            //disabilità bottoni di album view per non creare interferenze
+                                            document.querySelectorAll(".btn-info").forEach(button=>{
+                                                button.disabled = true;
+                                            });
+
+                                            document.getElementById('albumImagesContainer').style.display = "none";
+                                            document.getElementById('editOrderContainer').style.display = "block";
+                                            document.getElementById('backToViewButton').style.display = "block";
+                                            document.getElementById("editOrderButton").style.display = "none";
+                                            document.getElementById("saveOrderButton").style.display = "block";
+                                            document.getElementById("albumDivTitle").textContent = "Album Reorder";
+                                            document.getElementById("albumTitle").style.display = "none";
+                                            document.getElementById("albumDate").style.display = "none";
+                                            document.getElementById("albumCreator").style.display = "none";
+
+                                            loadSortableList();
+                                        });
+
+                                        document.getElementById('backToViewButton').addEventListener('click', () => {
+                                            //riabilita bottoni
+                                            document.querySelectorAll(".btn-info").forEach(button=>{
+                                                button.disabled = false;
+                                            });
+
+                                            document.getElementById('editOrderContainer').style.display = "none";
+                                            displayImages(images);
+                                        });
+
+                                        document.getElementById("saveOrderButton").addEventListener("click", () => {
+                                            console.log("Final Order: ", order);
+
+                                            //riabilita bottoni
+                                            document.querySelectorAll(".btn-info").forEach(button=>{
+                                                button.disabled = true;
+                                            });
+
+                                            let form = document.getElementById("deleteImageForm");
+                                            const data = new FormData(form);
+                                            data.append("order", order.toString());
+                                            data.append("albumId", album.id);
+
+                                            makePost("saveOrder", data, (request) => {
+                                                if (request.readyState === XMLHttpRequest.DONE) {
+                                                    if (request.status === 200) {
+                                                        serverError.textContent = "Order updated successfully!";
+                                                        serverError.style.color = "green";
+                                                        serverError.style.display = "block";
+                                                    } else {
+                                                        serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
+                                                        serverError.style.display = "block";
+                                                    }
+                                                }
+                                            });
+                                        });
+
+                                        //todo sovrascrivere / aggiornare ordine se si clicca di nuovo album view
                                     } else {
                                         serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                                         serverError.style.display = "block";
@@ -180,8 +255,6 @@
 
                         self.listcontainerbody.appendChild(row);
                     });
-
-                    this.listcontainer.style.display = "block";
                 }
             }
         }
@@ -250,6 +323,7 @@
                                     document.getElementById("albumCreator").textContent = newAlbum.authorUsername;
                                     document.getElementById("albumDate").textContent = newAlbum.date;
                                     currentOffset = 0;
+
                                     displayImages(images);
                                 } else {
                                     serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
@@ -269,6 +343,7 @@
                     //nascondi form creazione
                     document.getElementById('toggle').textContent = "Create new album";
                     document.getElementById('createAlbumFormContainer').style.display = "none";
+
                 } else {
                     serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                     serverError.style.display = "block";
@@ -315,16 +390,22 @@
 
             document.getElementById('toggle').style.display = "none";
             albumImagesDiv.style.display = "block";
-
-            document.getElementById("closeAlbum").onclick = function () {
-                document.getElementById('toggle').style.display = "block";
-                albumImagesDiv.style.display = "none";
-            }
+            document.getElementById("albumDivTitle").textContent = "Album view";
 
             //rimuovo tutte le celle tranne i bottoni
             while (imageRow.childElementCount > 2) {
                 imageRow.removeChild(imageRow.children[1]);
             }
+
+            // Riordina immagini
+            images.sort((a, b) => {
+                const indexA = order.indexOf(a.id);
+                const indexB = order.indexOf(b.id);
+                if (indexA === -1 || indexB === -1) {
+                    return 0; // se non sono presenti non faccio nulla
+                }
+                return indexA - indexB;
+            });
 
             currentAlbumImages = images.slice(currentOffset, currentOffset + 5);
 
@@ -333,6 +414,7 @@
                 let cell = document.createElement("td");
                 cell.style.width = "20%";
                 cell.style.verticalAlign = "top";
+                cell.dataset.idImage = image.id;
 
                 let card = document.createElement("div");
                 card.classList.add("d-flex");
@@ -344,13 +426,12 @@
                 img.src = image.path;
                 img.alt = image.title;
                 img.className = "thumbnail";
-                img.setAttribute("author",image.idAuthor);
+
                 card.appendChild(img);
 
                 let title = document.createElement("span");
                 title.textContent = image.title;
-                title.draggable = true;
-                title.classList.add("draggable");
+                title.setAttribute("idImage", image.id)
 
                 card.appendChild(title);
 
@@ -362,20 +443,6 @@
                 imageRow.insertBefore(cell, imageRow.children[imageRow.childElementCount - 1]);
             });
 
-            var draggables = document.querySelectorAll(".draggable");
-            draggables.forEach(draggable => {
-                draggable.addEventListener("dragstart", ()=>{
-                    draggable.classList.add("dragging");
-                })
-
-                draggable.addEventListener("dragover",(e)=>{
-                    e.preventDefault();
-                    draggable.classList.remove("dragging");
-                });
-
-                //todo dragover e swapping. esempio ordine nella tabella db -> "1,2,3,4,5".
-            });
-
             //Genero celle vuote se necessario
             let emptyCellsToAdd = 5 - currentAlbumImages.length;
             for (let i = 0; i < emptyCellsToAdd; i++) {
@@ -383,8 +450,6 @@
                 emptyCell.style.width = "20%";
                 imageRow.insertBefore(emptyCell, imageRow.children[imageRow.childElementCount - 1]);
             }
-
-
 
             albumImagesContainer.style.display = "block";
 
@@ -437,16 +502,16 @@
 
                     let form = document.getElementById("deleteImageForm");
                     const data = new FormData(form);
-                    data.append("imageId",image.id);
+                    data.append("imageId", image.id);
 
-                    makePost("deleteImage",data,(request) => {
+                    makePost("deleteImage", data, (request) => {
                         if (request.readyState === XMLHttpRequest.DONE) {
                             if (request.status === 200) {
                                 serverError.style.display = "none";
 
                                 hideModal();
                                 albumImagesDiv.style.display = "none";
-                                images.forEach(i =>{
+                                images.forEach(i => {
                                     if (i.id === image.id)
                                         images.remove(i);
                                 })
@@ -502,12 +567,47 @@
 
             window.onclick = function (event) {
                 if (event.target === document.getElementById("modalContainer")) {
+                    a
                     hideModal();
                 }
             }
         }
 
-    }
+        function loadSortableList() {
+            //prendi la lista e inizilizza
+            let sortableList = $('#sortableImagesList');
+            sortableList.empty();
 
+            //popola la lista
+            order.forEach(id => {
+                let img = images.find(image => image.id === id);
+                if (img) {
+                    let row = $('<tr>').attr('data-id', img.id);
+
+                    let titleCell = $('<td>').text(img.title);
+                    let dateCell = $('<td>').text(img.date);
+
+                    row.append(titleCell);
+                    row.append(dateCell);
+
+                    sortableList.append(row);
+                }
+            });
+
+            //abilita ordinamento su ogni riga del body
+            $('#sortableImagesList').sortable({
+                items: 'tr',
+                update: function (event, ui) {      //callback
+                    order = sortableList.children().map(function () {       //aggiorna ordine
+                        return $(this).data('id');
+                    }).get();
+                    console.log('New Order:', order);
+                }
+            });
+
+            //disabilita selezione
+            $('#sortableImagesTable').disableSelection();
+        }
+    }
 )
 ();

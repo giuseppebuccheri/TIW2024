@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <script src="js/utility.js" charset="utf-8" defer></script>
     <script src="js/homepage.js" charset="utf-8" defer></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -22,8 +24,9 @@
 
         <div id="albumImagesDiv" class="panel my-4" style="padding: 20px;">
             <span id="closeAlbum" class="close">&times;</span>
+            <input id="editOrderButton" class="btn btn-primary ml-1" type="button" value="Edit Order">
             <input id="saveOrderButton" class="btn btn-primary ml-1" type="button" value="Save Images Order">
-            <h1 class="text-center">Album View</h1><br>
+            <h1 class="text-center" id="albumDivTitle"></h1><br>
             <b><p class="text-center">Title:</b><span id="albumTitle"></span></p>
             <b><p class="text-center">Creator:</b><span id="albumCreator"></span></p>
             <b><p class="text-center">Date:</b><span id="albumDate"></span></p>
@@ -39,6 +42,19 @@
                     </tr>
                     </tbody>
                 </table>
+            </div>
+            <div id="editOrderContainer" style="display: none;">
+                <table id="sortableImagesTable" class="table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody id="sortableImagesList">
+                    </tbody>
+                </table>
+                <button id="backToViewButton" class="btn btn-secondary">Back to View</button>
             </div>
         </div>
 
@@ -81,7 +97,7 @@
                     </div>
                 </div>
                 <div class="table-container">
-                    <table id="userAlbumsContainer" class="table album-table">
+                    <table id="userAlbumsContainer" class="table album-table" style="display: none;">
                         <thead>
                         <tr>
                             <th>Title</th>
@@ -97,7 +113,7 @@
             <div class="col-md-6">
                 <h3 class="text-center">Other Users' Albums</h3>
                 <div class="table-container">
-                    <table id="othersAlbumsContainer" class="table album-table">
+                    <table id="othersAlbumsContainer" class="table album-table" style="display: none;">
                         <thead>
                         <tr>
                             <th>Title</th>

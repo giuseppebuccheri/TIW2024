@@ -19,7 +19,7 @@ import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
 @WebServlet("/login")
 @MultipartConfig
-public class Login extends HttpServlet {
+public class CheckLogin extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private Connection connection = null;
 

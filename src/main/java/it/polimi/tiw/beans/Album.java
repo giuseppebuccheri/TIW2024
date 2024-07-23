@@ -9,12 +9,14 @@ public class Album {
     private Date date;
     private String username;
     private String authorUsername;
+    private String imagesOrder;
 
-    public Album(int id, int author, String title, Date date) {
+    public Album(int id, int author, String title, Date date, String imagesOrder) {
         this.id = id;
         this.author = author;
         this.title = title;
         this.date = date;
+        this.imagesOrder = imagesOrder;
     }
 
     public void setAuthorUsername(String authorUsername) {

@@ -59,7 +59,6 @@ public class GetAlbum extends HttpServlet {
         AlbumDao albumDao = new AlbumDao(connection);
         UserDao userDao = new UserDao(connection);
         Album album;
-        String albumcreator;
 
         try {
             album = albumDao.getAlbumById(id);

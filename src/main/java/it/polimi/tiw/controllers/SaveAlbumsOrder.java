@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import it.polimi.tiw.beans.Comment;
 import it.polimi.tiw.beans.User;
+import it.polimi.tiw.dao.AlbumDao;
 import it.polimi.tiw.dao.CommentDao;
 import it.polimi.tiw.dao.UserDao;
 
@@ -36,19 +37,27 @@ public class SaveAlbumsOrder extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
-        User user = (User) session.getAttribute("user");
         String order = request.getParameter("order");
 
-        UserDao dao = new UserDao(connection);
+        AlbumDao dao = new AlbumDao(connection);
 
-        if (!checkParams(order)) {
+        if (!checkParams(order) || !checkParams(request.getParameter("albumId"))) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("order not valid.");
+            response.getWriter().write("parameters not valid.");
+            return;
+        }
+
+        int albumId = 0;
+        try {
+            albumId = Integer.parseInt(request.getParameter("albumId"));
+        } catch (NumberFormatException | NullPointerException e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("Not possible to recover album, try later");
             return;
         }
 
         try {
-            //dao.addOrder(user.getId(),order);
+            dao.addOrder(albumId,order);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().write("error saving order.");
