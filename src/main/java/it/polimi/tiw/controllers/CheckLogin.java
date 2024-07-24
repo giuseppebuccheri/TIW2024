@@ -42,13 +42,20 @@ public class CheckLogin extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getSession(false) != null && request.getSession(false).getAttribute("username") != null) {
+        if (request.getSession(false) != null && request.getSession(false).getAttribute("user") != null) {
             response.sendRedirect("home");
             return;
         }
+
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         String path = "/index.html";
+
+        if (request.getContentLength() == -1){
+            String errorMessage = "Please fill the form";
+            ctx.setVariable("errorMessage", errorMessage);
+        }
+
         templateEngine.process(path, ctx, response.getWriter());
     }
 

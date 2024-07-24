@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -41,11 +42,6 @@ public class CreateAlbum extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request,response);
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
@@ -54,8 +50,17 @@ public class CreateAlbum extends HttpServlet {
         Date date = new java.sql.Date(new java.util.Date().getTime());
         String[] selectedImages = request.getParameterValues("images");
 
-        if (!checkParams(title) || selectedImages == null) {
-            response.sendRedirect("home");
+        String errorMessage = null;
+
+        if (!checkParams(title)) {
+            errorMessage = "incorret or missing title";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
+            return;
+        }
+
+        if (selectedImages == null){
+            errorMessage = "please select at least one image";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 
@@ -67,21 +72,27 @@ public class CreateAlbum extends HttpServlet {
                     try {
                         dao.addImageToAlbum(Integer.parseInt(imageId), album_id);
                     } catch (Exception e) {
-                        response.sendRedirect("home");
+                        errorMessage = "error processing image id";
+                        response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
                         return;
                     }
                 }
             }
-        } catch (SQLException e) {
+        } catch (SQLException | NumberFormatException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in creating album");
+            errorMessage = "an error occurred while creating album";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        String path = getServletContext().getContextPath() + "/home";
-        response.sendRedirect(path);
+        response.sendRedirect("home");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
     }
 
     @Override

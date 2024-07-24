@@ -19,11 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
 @WebServlet("/image")
 public class GetImage extends HttpServlet {
@@ -49,11 +51,19 @@ public class GetImage extends HttpServlet {
         User user= (User) session.getAttribute("user");
 
         int id = 0;
+        String errorMessage;
+
+        if (!checkParams(request.getParameter("id"))) {
+            errorMessage = "incorret or missing image id";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
+            return;
+        }
 
         try {
             id = Integer.parseInt(request.getParameter("id"));
         } catch (NumberFormatException | NullPointerException e) {
-            response.sendRedirect("home");
+            errorMessage = "error processing image id";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 
@@ -67,7 +77,8 @@ public class GetImage extends HttpServlet {
         try {
             image = imageDaodao.getImageById(id);
             if (image == null) {
-                response.sendRedirect("home");
+                errorMessage = "image not found";
+                response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
                 return;
             }
             comments = commentDaodao.findCommentsByImage(id);
@@ -75,7 +86,8 @@ public class GetImage extends HttpServlet {
             imageauthor = imageDaodao.getAuthorUsernameById(id);
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_GATEWAY, "Failure in image's project database extraction");
+            errorMessage = "Failure in image's project database extraction";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 

@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.net.URLEncoder;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
 
@@ -45,11 +46,14 @@ public class GetAlbum extends HttpServlet {
         HttpSession session = request.getSession(false);
         int id = 0, offset = 0;
 
+        String errorMessage = null;
+
         if(request.getParameter("id") != null){
             try {
                 id = Integer.parseInt(request.getParameter("id"));
             } catch (NumberFormatException | NullPointerException e) {
-                response.sendRedirect("home");
+                errorMessage = "error processing album id.";
+                response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
                 return;
             }
             session.setAttribute("chosenAlbum", id);
@@ -58,7 +62,8 @@ public class GetAlbum extends HttpServlet {
             if(session.getAttribute("chosenAlbum") != null)
                 id = (Integer) session.getAttribute("chosenAlbum");
             else{
-                response.sendRedirect("home");
+                errorMessage = "missing album id";
+                response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
                 return;
             }
         }
@@ -72,7 +77,8 @@ public class GetAlbum extends HttpServlet {
             }
         } catch (NumberFormatException | NullPointerException e) {
             session.setAttribute("chosenAlbum",null);
-            response.sendRedirect("home");
+            errorMessage = "error processing offset.";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 
@@ -85,7 +91,8 @@ public class GetAlbum extends HttpServlet {
             album = dao.getAlbumById(id);
             if (album == null) {
                 session.setAttribute("chosenAlbum",null);
-                response.sendRedirect("home");
+                errorMessage = "album not found";
+                response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
                 return;
             }
 
@@ -115,11 +122,6 @@ public class GetAlbum extends HttpServlet {
         ctx.setVariable("previous", offset-5);
         ctx.setVariable("totalImagesNumber", num);
         templateEngine.process(path, ctx, response.getWriter());
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request,response);
     }
 
     @Override

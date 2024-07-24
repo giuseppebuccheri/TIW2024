@@ -46,8 +46,9 @@ public class Signup extends HttpServlet {
         ServletContext servletContext = getServletContext();
         final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         String path = "/signup.html";
+        String errorMessage = "Please fill the form";
+        ctx.setVariable("errorMessage", errorMessage);
         templateEngine.process(path, ctx, response.getWriter());
-//        doPost(request,response);
     }
 
     @Override
@@ -57,10 +58,11 @@ public class Signup extends HttpServlet {
         String repeat = request.getParameter("repeat");
         String email = request.getParameter("email");
 
+        String path = "/signup.html";
+        WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
+
         if (!checkParams(username) || !checkParams(password) || !checkParams(repeat) || !checkParams(email)) {
-            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
             ctx.setVariable("errorMessage", "Please fulfill all the fields.");
-            String path = "/signup";
             templateEngine.process(path, ctx, response.getWriter());
             return;
         }
@@ -79,30 +81,25 @@ public class Signup extends HttpServlet {
                             response.sendRedirect("home");
                         }
                         else {
-                            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
                             ctx.setVariable("errorMessage", "Please try again.");
-                            templateEngine.process("signup", ctx, response.getWriter());
+                            templateEngine.process(path, ctx, response.getWriter());
                         }
                     } else {
-                        WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
                         ctx.setVariable("errorMessage", "Invalid email. Please try again. ");
-                        templateEngine.process("signup", ctx, response.getWriter());
+                        templateEngine.process(path, ctx, response.getWriter());
                     }
                 }else {
-                    WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
                     ctx.setVariable("errorMessage", "The two passwords are different.Please try again.");
-                    templateEngine.process("signup", ctx, response.getWriter());
+                    templateEngine.process(path, ctx, response.getWriter());
                 }
             } else {
-                WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
                 ctx.setVariable("errorMessage", "This username already exists.Please try again.");
-                templateEngine.process("signup", ctx, response.getWriter());
+                templateEngine.process(path, ctx, response.getWriter());
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-            WebContext ctx = new WebContext(request, response, getServletContext(), request.getLocale());
             ctx.setVariable("errorMessage", "An error occurred while processing your request. Please try again.");
-            templateEngine.process("signup", ctx, response.getWriter());
+            templateEngine.process(path, ctx, response.getWriter());
         }
     }
 

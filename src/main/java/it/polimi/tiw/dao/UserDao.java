@@ -40,7 +40,7 @@ public class UserDao {
 
     public List<Album> findUserAlbums(int id) throws SQLException {
         List<Album> albums = new ArrayList<Album>();
-        String sql = "SELECT * FROM albums WHERE id_author = ?";
+        String sql = "SELECT * FROM albums WHERE id_author = ? ORDER BY date DESC";
         try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
             pstatement.setInt(1, id);
             try (ResultSet result = pstatement.executeQuery();) {
@@ -58,7 +58,7 @@ public class UserDao {
 
     public List<Image> findUserImages(int id) throws SQLException{
         List<Image> images = new ArrayList<Image>();
-        String sql = "SELECT * FROM images WHERE author = ?";
+        String sql = "SELECT * FROM images WHERE author = ? ORDER BY date DESC";
         try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
             pstatement.setInt(1, id);
             try (ResultSet result = pstatement.executeQuery();) {
@@ -79,7 +79,7 @@ public class UserDao {
 
     public List<Album> findOthersAlbums(int id) throws SQLException {
         List<Album> albums = new ArrayList<Album>();
-        String sql = "SELECT * FROM albums WHERE id_author <> ?";
+        String sql = "SELECT * FROM albums WHERE id_author <> ? ORDER BY date DESC";
         try (PreparedStatement pstatement = connection.prepareStatement(sql);) {
             pstatement.setInt(1, id);
             try (ResultSet result = pstatement.executeQuery();) {

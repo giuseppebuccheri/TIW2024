@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -38,10 +39,7 @@ public class AddComment extends HttpServlet {
         connection = getConnection(context);
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request,response);
-    }
-
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
@@ -49,17 +47,21 @@ public class AddComment extends HttpServlet {
         User user = (User) session.getAttribute("user");
         int imageId;
 
+        String errorMessage = null;
+
         UserDao userDao = new UserDao(connection);
 
         if (!checkParams(commentText) || !checkParams(request.getParameter("imageId"))) {
-            response.sendRedirect("home");
+            errorMessage = "incorret or missing parameters";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 
         try {
             imageId = Integer.parseInt(request.getParameter("imageId"));
         } catch (NumberFormatException e) {
-            response.sendRedirect("home");
+            errorMessage = "error processing image id";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 
@@ -70,8 +72,14 @@ public class AddComment extends HttpServlet {
             response.sendRedirect("image?id=" + imageId);
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add comment");
+            errorMessage = "an error occured";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
     }
 
     public void destroy() {

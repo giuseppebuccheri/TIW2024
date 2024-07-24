@@ -181,26 +181,13 @@ table {
     background-color: #0056b3;
 }
 
-.ml-auto {
-    margin-left: auto;
+.image-section {
+    margin-right: 20px;
 }
 
-.mt-4 {
-    margin-top: 1.5rem!important;
-}
-
-.d-flex {
-    display: flex!important;
-}
-
-.align-items-center {
-    align-items: center!important;
-}
-
-.justify-content-center {
-    justify-content: center!important;
-}
-
-.flex-column {
-    flex-direction: column!important;
+.image-section img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 20px;
 }

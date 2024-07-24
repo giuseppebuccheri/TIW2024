@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,6 +31,7 @@ public class DeleteImage extends HttpServlet {
     private TemplateEngine templateEngine = null;
     private Connection connection = null;
 
+    @Override
     public void init() throws ServletException {
         ServletContext context = getServletContext();
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(context);
@@ -41,38 +43,45 @@ public class DeleteImage extends HttpServlet {
         connection = getConnection(context);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
 
         User user = (User) session.getAttribute("user");
         int imageId;
 
+        String errorMessage;
+
         if (!checkParams(request.getParameter("imageId"))) {
-            response.sendRedirect("home");
+            errorMessage = "incorret or missing image id";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 
         try {
             imageId = Integer.parseInt(request.getParameter("imageId"));
         } catch (NumberFormatException e) {
-            response.sendRedirect("home");
+            errorMessage = "error processing image id";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
             return;
         }
 
         ImageDao imageDao = new ImageDao(connection);
         CommentDao commentDao = new CommentDao(connection);
+
         try {
-            String imageAuthor = imageDao.getAuthorUsernameById(imageId);
-            if (!user.getUsername().equals(imageAuthor)) {
-                response.sendRedirect("home");
+            if (user.getId() != imageDao.getImageById(imageId).getIdAuthor()) {
+                errorMessage = "you're not authorized to deleted this image";
+                response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
                 return;
             }
             commentDao.deleteImagesComments(imageId);
             imageDao.deleteImage(imageId);
             response.sendRedirect("home");
-        } catch (SQLException e) {
+        } catch (SQLException | NumberFormatException | NullPointerException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete image");
+            errorMessage = "an error occurred while deleting this image";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
         }
     }
 

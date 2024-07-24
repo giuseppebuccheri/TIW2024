@@ -11,7 +11,7 @@
     <div class="navbar-nav mr-auto">
         <div class="btn btn-primary"><a class="nav-item nav-link" style="color: white" href="home">Home page</a></div>
     </div>
-    <form action="logout" method="post" class="form-inline ml-auto">
+    <form action="logout" class="form-inline ml-auto">
         <button type="submit" class="btn btn-outline-danger btn-lg">Logout</button>
     </form>
 </nav>
@@ -21,10 +21,10 @@
         <b><p class="text-center">Title: </b><span th:text="${album.title}"></span></p>
         <b><p class="text-center">Creator: </b><span th:text="${albumcreator}"></span></p>
         <b><p class="text-center">Creation Date: </b><span th:text="${album.date}"></span></p>
-        <table class="table table-bordered text-center">
+        <table class="table table-bordered text-center" th:block th:if="${albumImages.size()} != 0">
             <tbody>
             <tr>
-                <td class="align-middle" th:block th:if="${previous} >= 0">
+                <td class="align-middle " th:block th:if="${previous} >= 0">
                     <a th:href="@{/album(id=${album.id}, offset=${previous})}">
                         <button class="btn btn-primary">Previous</button>
                     </a>
@@ -32,8 +32,7 @@
                 <td th:each="col : ${#numbers.sequence(0, 4)}" style="width: 20%; vertical-align: top;">
                     <div class="d-flex flex-column align-items-center" th:if="${col < albumImages.size()}">
                         <a th:href="@{/image(id=${albumImages[col].id})}">
-                            <img th:src="@{${albumImages[col].path}}" th:alt="${albumImages[col].title}"
-                                 class="thumbnail"></a>
+                            <img th:src="@{${albumImages[col].path}}" th:alt="${albumImages[col].title}" class="thumbnail"></a>
                         <br>
                         <span th:text="${albumImages[col].title}"></span>
                     </div>
@@ -49,6 +48,9 @@
             </tr>
             </tbody>
         </table>
+        <div class="form-container" th:block th:if="${albumImages.size()} == 0">
+            <h3 class="text-center">This album is empty</h3>
+        </div>
     </div>
 </div>
 </body>

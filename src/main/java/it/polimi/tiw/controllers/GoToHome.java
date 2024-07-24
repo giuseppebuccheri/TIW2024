@@ -46,6 +46,13 @@ public class GoToHome extends HttpServlet {
         User user = (User) session.getAttribute("user");
         int id = user.getId();
 
+        String errorMessage = null;
+
+        if (request.getParameter("errorMessage")!=null)
+            errorMessage = request.getParameter("errorMessage");
+
+        System.out.println(errorMessage);
+
         String presentation;
         List<Album> userAlbums, otherAlbums;
         List<Image> userImages;
@@ -77,6 +84,8 @@ public class GoToHome extends HttpServlet {
         ctx.setVariable("userAlbums", userAlbums);
         ctx.setVariable("otherAlbums", otherAlbums);
         ctx.setVariable("userImages", userImages);
+        if (errorMessage != null)
+            ctx.setVariable("errorMessage", errorMessage);
         templateEngine.process(path, ctx, response.getWriter());
     }
 

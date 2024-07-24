@@ -8,7 +8,7 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <form action="logout" method="post" class="form-inline ml-auto">
+    <form action="logout" class="form-inline ml-auto">
         <button type="submit" class="btn btn-outline-danger btn-lg">Logout</button>
     </form>
 </nav>
@@ -17,14 +17,15 @@
     <h1 class="title">Welcome to the Home Page</h1>
     <p class="text-center">Nice to see you again, <b><span th:text="${username}"></span></b></p>
 
+    <div class="text-center mt-3">
+        <p th:if="${errorMessage} != null" th:text="${errorMessage}" class="error-message"></p>
+    </div>
+
     <div class="row">
         <div class="col-md-6">
             <h3 class="text-center" th:text="${presentation}"></h3>
-            <div class="text-center mt-3">
-                <p th:text="${errorMessage}" class="error-message"></p>
-            </div>
             <div class="table-container">
-                <table class="table album-table">
+                <table class="table album-table" th:if="${userAlbums.size()} != 0">
                     <thead>
                     <tr>
                         <th>Title</th>
@@ -43,35 +44,37 @@
             </div>
 
             <div class="toggle-form">
-                <div class="form-container">
-                    <br>
-                    <div class="form-container">
-                        <h3 class="text-center">Create a new album</h3>
-                        <form action="createAlbum" method="post">
-                            <div class="form-group">
-                                <label class="text-center" for="title">Title:</label>
-                                <input type="text" class="form-control" id="title" name="title" required>
-                            </div>
-                            <div class="table-container select-table">
-                                <table class="table album-table">
-                                    <thead class="text-center">
-                                    <tr>
-                                        <th>Select</th>
-                                        <th>Image Title</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="text-center" >
-                                    <tr th:each="image : ${userImages}">
-                                        <td><input class="form-check-input" type="checkbox" name="images" th:value="${image.id}"></td>
-                                        <td th:text="${image.title}"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <br>
-                            <button type="submit" class="btn btn-success btn-block">Create Album</button>
-                        </form>
-                    </div>
+                <div class="form-container" th:block th:if="${userImages.size()} != 0">
+                    <h3 class="text-center">Create a new album</h3>
+                    <form action="createAlbum" method="post">
+                        <div class="form-group">
+                            <label class="text-center" for="title">Title:</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        <div class="table-container select-table">
+                            <table class="table album-table">
+                                <thead class="text-center">
+                                <tr>
+                                    <th>Select</th>
+                                    <th>Image Title</th>
+                                </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                <tr th:each="image : ${userImages}">
+                                    <td><input class="form-check-input" type="checkbox" name="images"
+                                               th:value="${image.id}"></td>
+                                    <td th:text="${image.title}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-success btn-block">Create Album</button>
+                    </form>
+                </div>
+                <div class="form-container" th:block th:if="${userImages.size()} == 0">
+                    <h3 class="text-center">You have no images uploaded</h3>
+                    <p class="text-center"> you can't create an album </p>
                 </div>
             </div>
         </div>

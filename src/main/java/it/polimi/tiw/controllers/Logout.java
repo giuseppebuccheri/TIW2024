@@ -25,6 +25,7 @@ public class Logout extends HttpServlet {
         this.templateEngine.setTemplateResolver(templateResolver);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -32,11 +33,6 @@ public class Logout extends HttpServlet {
         }
         String path = getServletContext().getContextPath() + "/index.html";
         response.sendRedirect(path);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
     }
 }
 
