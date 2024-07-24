@@ -22,6 +22,7 @@ import java.util.List;
 import java.net.URLEncoder;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
+import static it.polimi.tiw.utils.ParamsChecker.checkParams;
 
 @WebServlet("/album")
 public class GetAlbum extends HttpServlet {
@@ -48,25 +49,21 @@ public class GetAlbum extends HttpServlet {
 
         String errorMessage = null;
 
-        if(request.getParameter("id") != null){
-            try {
-                id = Integer.parseInt(request.getParameter("id"));
-            } catch (NumberFormatException | NullPointerException e) {
-                errorMessage = "error processing album id.";
-                response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
-                return;
-            }
-            session.setAttribute("chosenAlbum", id);
+        if (!checkParams(request.getParameter("id"))) {
+            errorMessage = "incorret or missing album id";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
+            return;
         }
-        else{
-            if(session.getAttribute("chosenAlbum") != null)
-                id = (Integer) session.getAttribute("chosenAlbum");
-            else{
-                errorMessage = "missing album id";
-                response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
-                return;
-            }
+
+        try {
+            id = Integer.parseInt(request.getParameter("id"));
+        } catch (NumberFormatException | NullPointerException e) {
+            errorMessage = "error processing album id";
+            response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
+            return;
         }
+
+        //Controllo offset se presente
 
         try {
             if (request.getParameter("offset") != null) {
@@ -90,7 +87,6 @@ public class GetAlbum extends HttpServlet {
         try {
             album = dao.getAlbumById(id);
             if (album == null) {
-                session.setAttribute("chosenAlbum",null);
                 errorMessage = "album not found";
                 response.sendRedirect("home?errorMessage=" + URLEncoder.encode(errorMessage, "UTF-8"));
                 return;
