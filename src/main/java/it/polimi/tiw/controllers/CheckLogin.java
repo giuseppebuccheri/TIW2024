@@ -66,7 +66,10 @@ public class CheckLogin extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request,response);
+        if (request.getSession(false) != null && request.getSession(false).getAttribute("user") != null)
+            response.sendRedirect("home.html");
+        else
+            response.sendRedirect("index.html");
     }
 
     public void destroy() {

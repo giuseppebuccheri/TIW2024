@@ -83,6 +83,8 @@
     }
 
     function showResults() {
+        errorMessage.style.display = "none";
+
         if (request.readyState === XMLHttpRequest.DONE) {
             if (request.status === 200) {
                 var message = JSON.parse(request.responseText);
@@ -92,6 +94,7 @@
             } else {
                 var message = request.responseText;
                 errorMessage.textContent = message;
+                errorMessage.style.display = "block";
             }
         }
     }

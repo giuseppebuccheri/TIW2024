@@ -65,7 +65,6 @@ public class GetAlbum extends HttpServlet {
                 return;
             }
             albumImages = albumDao.findAlbumImages(id);  //ritorna tutte le immagini
-            album.setAuthorUsername(albumDao.getAuthorUsernameById(id));
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
             response.getWriter().write("Failure in album's project database extraction");

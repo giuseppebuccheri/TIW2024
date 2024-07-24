@@ -8,7 +8,6 @@ public class Album {
     private String title;
     private Date date;
     private String username;
-    private String authorUsername;
     private String imagesOrder;
 
     public Album(int id, int author, String title, Date date, String imagesOrder) {
@@ -19,9 +18,6 @@ public class Album {
         this.imagesOrder = imagesOrder;
     }
 
-    public void setAuthorUsername(String authorUsername) {
-        this.authorUsername = authorUsername;
-    }
 
     public int getAuthor() {
         return author;

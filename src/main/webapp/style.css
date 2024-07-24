@@ -46,7 +46,7 @@ body {
 }
 
 .album-table {
-    border: 1px solid lightblue;
+    /*border: 1px solid lightblue;*/
 }
 
 .table-container,
@@ -220,27 +220,12 @@ body {
 
 #sortableImagesTable th,
 #sortableImagesTable td {
-    border: 1px solid #ddd;
-    padding: 8px;
     text-align: center;
 }
 
-#sortableImagesTable tr:nth-child(even) {
-    background-color: #a6d6dc;
-}
-
 #sortableImagesTable tr:hover {
-    background-color: #a7d966;
+    background-color: #86e1f6;
     cursor: move;
 }
 
-#sortableImagesTable th {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-}
-
-#sortableImagesTable tbody tr {
-    height: 20px;
-}
 

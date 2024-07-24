@@ -142,6 +142,13 @@
                         titleCell.textContent = album.title;
                         row.appendChild(titleCell);
 
+                        // creatore (solo per others)
+                        if(album.username !== sessionStorage.getItem("username")){
+                            creatorCell = document.createElement("td");
+                            creatorCell.textContent = album.username;
+                            row.appendChild(creatorCell);
+                        }
+
                         // data
                         dateCell = document.createElement("td");
                         dateCell.textContent = album.date;
@@ -154,16 +161,22 @@
                         button.classList.add("btn");
                         button.classList.add("btn-info");
                         button.addEventListener("click", (e) => {
+                            if(document.getElementById("editOrderContainer").style.display === "block"){
+                                serverError.textContent = "please close or submit the current album order first";
+                                serverError.style.display = "block";
+                            }
+                            else{
                             e.preventDefault();
                             makeGet("album?id=" + album.id, (request) => {
                                 if (request.readyState === XMLHttpRequest.DONE) {       //4
                                     if (request.status === 200) {                       //ok
                                         serverError.style.display = "none";
+                                        serverError.style.color = "red";
 
                                         images = JSON.parse(request.responseText);  //Prendo tutte le immagini (var globale)
 
                                         document.getElementById("albumTitle").textContent = album.title;
-                                        document.getElementById("albumCreator").textContent = album.author;     //todo cambiare con username
+                                        document.getElementById("albumCreator").textContent = album.username;
                                         document.getElementById("albumDate").textContent = album.date;
 
                                         document.getElementById("editOrderButton").style.display = "none";
@@ -223,9 +236,6 @@
                                                 document.getElementById("editOrderButton").style.display = "none";
                                                 document.getElementById("saveOrderButton").style.display = "block";
                                                 document.getElementById("albumDivTitle").textContent = "Album Reorder";
-                                                document.getElementById("albumTitle").style.display = "none";
-                                                document.getElementById("albumDate").style.display = "none";
-                                                document.getElementById("albumCreator").style.display = "none";
 
                                                 loadSortableList();
                                             });
@@ -286,6 +296,8 @@
                                     }
                                 }
                             });
+
+                            }
                         }, false);
 
                         linkcell.appendChild(button);
@@ -580,6 +592,7 @@
                     const data = new FormData(form);
 
                     // Controllo input testo lato client
+
                     if (document.getElementById('commentText').value.trim() === "") {
                         alert("Comment cannot be empty!");
                         return;
@@ -600,6 +613,8 @@
                 document.getElementById("modalContainer").style.display = "block";
             }
 
+            //chiusure finestra modale
+
             function hideModal() {
                 document.getElementById("modalContainer").style.display = "none";
             }
@@ -610,7 +625,6 @@
 
             window.onclick = function (event) {
                 if (event.target === document.getElementById("modalContainer")) {
-                    a
                     hideModal();
                 }
             }
