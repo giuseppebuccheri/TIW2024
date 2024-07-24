@@ -1,7 +1,7 @@
-(function () {
+(function () {      //IIFE: evita l'utilizzo di variabili nel global scope
 
+        //elementi della pagina
         var userAlbumsTable, othersAlbumsTable;
-        var presentation;
         var currentAlbumImages = [];
         var images = [];        //Tutte le immagini dell'album corrente
         var order = [];        //Ordine di tutte le immagini dell'album corrente
@@ -12,7 +12,8 @@
         //al caricamento della pagina
         window.addEventListener("load", () => {
 
-            if (sessionStorage.getItem("id") == null) {
+            //controllo anche lato client se la sessione è attiva
+            if (sessionStorage.getItem("id") == null || sessionStorage.getItem("username") == null) {
                 window.location.href = "index.html";
             }
 
@@ -32,9 +33,11 @@
             serverError.style.display = "none";
             document.getElementById("saveOrderButton").style.visibility = "none";
 
-            //Prendi gli album dal server con AJAX
+            //fetch dei dati necessari alla pagina in modo asincrono
             loadAlbums();
             loadUserImages();
+
+            document.querySelector(".toggle-form").style.display = "none";
 
             var toggle = document.getElementById('toggle');
             toggle.style.display = "block";
@@ -44,11 +47,13 @@
                 if (x.style.display === "none" || x.style.display === "") {
                     toggle.textContent = "Hide form";
                     x.style.display = "block";
+                    document.querySelector(".toggle-form").style.display = "block";
                     document.getElementById("userAlbumsContainer").style.display = "none";
                 } else {
                     toggle.textContent = "Create new album";
                     x.style.display = "none";
-                    document.getElementById("userAlbumsContainer").style.display = "block";
+                    document.querySelector(".toggle-form").style.display = "none";
+                    document.getElementById("userAlbumsContainer").style.display = "table";
                 }
             });
 
@@ -57,11 +62,19 @@
                 //mostra la lista aggiornata
                 document.getElementById('toggle').textContent = "Create new album";
                 document.getElementById('createAlbumFormContainer').style.display = "none";
-                document.getElementById("userAlbumsContainer").style.display = "block";
+                document.getElementById("userAlbumsContainer").style.display = "table";
 
                 let form = document.getElementById("createAlbumForm");
                 const data = new FormData(form);
                 makePost('createAlbum', data, addAlbum);
+            });
+
+            //se schiaccio invio mentre scrivo simula il click del tasto submit
+            document.getElementById('title').addEventListener('keypress', function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    document.getElementById('createAlbumButton').click();
+                }
             });
 
             document.getElementById('albumImagesDiv').style.display = "none";
@@ -80,6 +93,8 @@
 
         }, false);
 
+        //funzioni di data fetch asincrone
+
         function loadAlbums() {
             userAlbumsTable.reset();
             othersAlbumsTable.reset();
@@ -90,25 +105,25 @@
             makeGet("getUserImages", insertList);
         }
 
+        //oggetto albumTable
+
         function AlbumTable(_listcontainer, _listcontainerbody) {
             this.listcontainer = _listcontainer;
             this.listcontainerbody = _listcontainerbody;
 
+            //svuota e nascondi il contenuto precedente
             this.reset = function () {
                 this.listcontainerbody.innerHTML = "";
                 this.listcontainer.style.display = "none";
             }
 
-            this.show = function (albums) {
-                this.update(albums);
-            };
-
             this.update = function (albums) {
                 let row, titleCell, dateCell, linkcell, anchor;
 
                 if (albums.length === 0) {
-                    presentation.textContent = "No album uploaded"
-
+                    document.getElementById("noAlbumsMessage").textContent = "No album uploaded yet";
+                    document.getElementById("noAlbumsMessage").style.display = "block";
+                    this.listcontainerbody.style.display = "none";
                 } else {
                     this.listcontainerbody.innerHTML = "";
                     this.listcontainer.style.display = "table";
@@ -138,110 +153,133 @@
                         button.textContent = "View album";
                         button.classList.add("btn");
                         button.classList.add("btn-info");
-                        button.setAttribute('albumId', album.id);
                         button.addEventListener("click", (e) => {
                             e.preventDefault();
                             makeGet("album?id=" + album.id, (request) => {
-                                if (request.readyState === XMLHttpRequest.DONE) {
-                                    if (request.status === 200) {
+                                if (request.readyState === XMLHttpRequest.DONE) {       //4
+                                    if (request.status === 200) {                       //ok
                                         serverError.style.display = "none";
 
                                         images = JSON.parse(request.responseText);  //Prendo tutte le immagini (var globale)
 
                                         document.getElementById("albumTitle").textContent = album.title;
-                                        document.getElementById("albumCreator").textContent = album.authorUsername;     //todo non va
+                                        document.getElementById("albumCreator").textContent = album.author;     //todo cambiare con username
                                         document.getElementById("albumDate").textContent = album.date;
-                                        currentOffset = 0;
 
-                                        order = [];
+                                        document.getElementById("editOrderButton").style.display = "none";
 
-                                        //Stabilisco ordine immagini
-                                        if (album.imagesOrder === null || album.imagesOrder === undefined) {
-                                            // Riordina in ordine decrescente di data
-                                            for (i = 0; i < images.length; i++)
-                                                order[i] = images[i].id;
-                                            console.log('Order (default):', order);
+                                        if (images.length === 0) {
+                                            serverError.textContent = "this album is empty";
+                                            serverError.style.display = "block";
                                         } else {
-                                            // Carica ordine dal campo imagesOrder
-                                            order = album.imagesOrder.split(',').map(id => parseInt(id, 10));
-                                            console.log('Order (from database):', order);
-                                        }
+                                            currentOffset = 0;
 
-                                        originalOrder = [...order];
+                                            order = [];
 
-                                        displayImages(images);
+                                            //Stabilisco ordine immagini
+                                            if (album.imagesOrder === null || album.imagesOrder === undefined) {
+                                                // Riordina in ordine decrescente di data
+                                                for (i = 0; i < images.length; i++)
+                                                    order[i] = images[i].id;
+                                                console.log('Order (default):', order);
+                                            } else {
+                                                // Carica ordine dal campo imagesOrder
+                                                order = album.imagesOrder.split(',').map(id => parseInt(id, 10));
+                                                console.log('Order (from database):', order);
+                                            }
 
-                                        document.getElementById("closeAlbum").onclick = function () {
-                                            document.getElementById('toggle').style.display = "block";
-                                            albumImagesDiv.style.display = "none";
-                                            document.getElementById('editOrderContainer').style.display = "none";
-                                            document.getElementById('serverError').style.display = "none";
-                                            //riabilita bottoni
-                                            document.querySelectorAll(".btn-info").forEach(button=>{
-                                                button.disabled = false;
-                                            });
-                                        }
+                                            originalOrder = [...order];
 
-                                        document.getElementById("editOrderButton").style.display = "block";
-                                        document.getElementById("saveOrderButton").style.display = "none";
-
-                                        document.getElementById('editOrderButton').addEventListener('click', () => {
-                                            //disabilità bottoni di album view per non creare interferenze
-                                            document.querySelectorAll(".btn-info").forEach(button=>{
-                                                button.disabled = true;
-                                            });
-
-                                            document.getElementById('albumImagesContainer').style.display = "none";
-                                            document.getElementById('editOrderContainer').style.display = "block";
-                                            document.getElementById('backToViewButton').style.display = "block";
-                                            document.getElementById("editOrderButton").style.display = "none";
-                                            document.getElementById("saveOrderButton").style.display = "block";
-                                            document.getElementById("albumDivTitle").textContent = "Album Reorder";
-                                            document.getElementById("albumTitle").style.display = "none";
-                                            document.getElementById("albumDate").style.display = "none";
-                                            document.getElementById("albumCreator").style.display = "none";
-
-                                            loadSortableList();
-                                        });
-
-                                        document.getElementById('backToViewButton').addEventListener('click', () => {
-                                            //riabilita bottoni
-                                            document.querySelectorAll(".btn-info").forEach(button=>{
-                                                button.disabled = false;
-                                            });
-
-                                            document.getElementById('editOrderContainer').style.display = "none";
                                             displayImages(images);
-                                        });
 
-                                        document.getElementById("saveOrderButton").addEventListener("click", () => {
-                                            console.log("Final Order: ", order);
+                                            document.getElementById("closeAlbum").onclick = function () {
+                                                document.getElementById('toggle').style.display = "block";
+                                                albumImagesDiv.style.display = "none";
+                                                document.getElementById('editOrderContainer').style.display = "none";
+                                                document.getElementById('serverError').style.display = "none";
+                                                //riabilita bottoni
+                                                document.querySelectorAll(".btn-info").forEach(button => {
+                                                    button.disabled = false;
+                                                });
+                                            }
 
-                                            //riabilita bottoni
-                                            document.querySelectorAll(".btn-info").forEach(button=>{
-                                                button.disabled = true;
+                                            //accedo alla modifca se ho più di un immagine
+                                            if (images.length > 1)
+                                                document.getElementById("editOrderButton").style.display = "block";
+                                            else
+                                                document.getElementById("editOrderButton").style.display = "none";
+
+                                            document.getElementById("saveOrderButton").style.display = "none";
+
+                                            document.getElementById('editOrderButton').addEventListener('click', () => {
+                                                //disabilità bottoni di album view per non creare interferenze
+                                                document.querySelectorAll(".btn-info").forEach(button => {
+                                                    button.disabled = true;
+                                                });
+
+                                                document.getElementById('albumImagesContainer').style.display = "none";
+                                                document.getElementById('editOrderContainer').style.display = "block";
+                                                document.getElementById('backToViewButton').style.display = "block";
+                                                document.getElementById("editOrderButton").style.display = "none";
+                                                document.getElementById("saveOrderButton").style.display = "block";
+                                                document.getElementById("albumDivTitle").textContent = "Album Reorder";
+                                                document.getElementById("albumTitle").style.display = "none";
+                                                document.getElementById("albumDate").style.display = "none";
+                                                document.getElementById("albumCreator").style.display = "none";
+
+                                                loadSortableList();
                                             });
 
-                                            let form = document.getElementById("deleteImageForm");
-                                            const data = new FormData(form);
-                                            data.append("order", order.toString());
-                                            data.append("albumId", album.id);
+                                            document.getElementById('backToViewButton').addEventListener('click', () => {
+                                                //riabilita bottoni
+                                                document.querySelectorAll(".btn-info").forEach(button => {
+                                                    button.disabled = false;
+                                                });
 
-                                            makePost("saveOrder", data, (request) => {
-                                                if (request.readyState === XMLHttpRequest.DONE) {
-                                                    if (request.status === 200) {
-                                                        serverError.textContent = "Order updated successfully!";
-                                                        serverError.style.color = "green";
-                                                        serverError.style.display = "block";
-                                                    } else {
-                                                        serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
-                                                        serverError.style.display = "block";
+                                                document.getElementById('editOrderContainer').style.display = "none";
+                                                displayImages(images);
+                                            });
+
+                                            document.getElementById("saveOrderButton").addEventListener("click", () => {
+                                                console.log("Final Order: ", order);
+
+                                                //riabilita bottoni
+                                                document.querySelectorAll(".btn-info").forEach(button => {
+                                                    button.disabled = true;
+                                                });
+
+                                                let form = document.getElementById("saveOrderForm");
+                                                const data = new FormData(form);
+                                                data.append("order", order.toString());
+                                                data.append("albumId", album.id);
+
+                                                makePost("saveOrder", data, (request) => {
+                                                    if (request.readyState === XMLHttpRequest.DONE) {
+                                                        if (request.status === 200) {
+                                                            serverError.textContent = "Order updated successfully! The changes will be visible on your next login.";
+                                                            serverError.style.color = "green";
+                                                            serverError.style.display = "block";
+                                                        } else {
+                                                            serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
+                                                            serverError.style.display = "block";
+                                                        }
                                                     }
-                                                }
-                                            });
-                                        });
+                                                });
 
-                                        //todo sovrascrivere / aggiornare ordine se si clicca di nuovo album view
+                                                //Totna alla visualizzazione delle liste
+                                                document.getElementById('editOrderContainer').style.display = "none";
+                                                document.getElementById('toggle').style.display = "block";
+                                                document.getElementById('albumImagesDiv').style.display = "none";
+                                                document.getElementById('editOrderContainer').style.display = "none";
+                                                document.getElementById('serverError').style.display = "none";
+
+                                                //riabilita bottoni
+                                                document.querySelectorAll(".btn-info").forEach(button => {
+                                                    button.disabled = false;
+                                                });
+                                            });
+                                        }
+
                                     } else {
                                         serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                                         serverError.style.display = "block";
@@ -274,8 +312,8 @@
                     let userAlbums = allAlbums.filter(album => album.username === username);
                     let otherAlbums = allAlbums.filter(album => album.username !== username);
 
-                    userAlbumsTable.show(userAlbums);
-                    othersAlbumsTable.show(otherAlbums);
+                    userAlbumsTable.update(userAlbums);
+                    othersAlbumsTable.update(otherAlbums);
                 } else {
                     serverError.textContent = "Server error [" + request.status + "]: " + request.responseText;
                     serverError.style.display = "block";
@@ -310,7 +348,6 @@
                     newButton.textContent = "View album";
                     newButton.classList.add("btn");
                     newButton.classList.add("btn-info");
-                    newButton.setAttribute('albumId', newAlbum.id);
                     newButton.addEventListener("click", (e) => {
                         e.preventDefault();
                         makeGet("album?id=" + newAlbum.id, (request) => {
@@ -319,7 +356,7 @@
                                     serverError.style.display = "none";
 
                                     images = JSON.parse(request.responseText);  //Prendo tutte le immagini
-                                    document.getElementById("albumTile").textContent = newAlbum.title;
+                                    document.getElementById("albumTitle").textContent = newAlbum.title;
                                     document.getElementById("albumCreator").textContent = newAlbum.authorUsername;
                                     document.getElementById("albumDate").textContent = newAlbum.date;
                                     currentOffset = 0;
@@ -338,7 +375,7 @@
 
                     //Aggiungi in cima perchè è il primo in ordine decrescente
                     document.getElementById("userAlbumsContainer").insertBefore(newRow, document.getElementById("userAlbumsContainer").firstChild);
-                    document.getElementById("userAlbumsContainer").style.display = "block";
+                    document.getElementById("userAlbumsContainer").style.display = "table";
 
                     //nascondi form creazione
                     document.getElementById('toggle').textContent = "Create new album";
@@ -414,7 +451,6 @@
                 let cell = document.createElement("td");
                 cell.style.width = "20%";
                 cell.style.verticalAlign = "top";
-                cell.dataset.idImage = image.id;
 
                 let card = document.createElement("div");
                 card.classList.add("d-flex");
@@ -431,7 +467,6 @@
 
                 let title = document.createElement("span");
                 title.textContent = image.title;
-                title.setAttribute("idImage", image.id)
 
                 card.appendChild(title);
 
@@ -554,6 +589,14 @@
                     makePost('addComment', data, addComment);
                 });
 
+                //se schiaccio invio mentre scrivo simula il click del tasto submit
+                document.getElementById('commentText').addEventListener('keypress', function (event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        document.getElementById('addCommentButton').click();
+                    }
+                });
+
                 document.getElementById("modalContainer").style.display = "block";
             }
 
@@ -572,6 +615,8 @@
                 }
             }
         }
+
+        //Funzione per gestire il drag and drop tramite la libreria jquery
 
         function loadSortableList() {
             //prendi la lista e inizilizza
@@ -610,4 +655,4 @@
         }
     }
 )
-();
+(); //esegue immediatamente la funzione anonima

@@ -29,17 +29,6 @@ public class CheckLogin extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        String path;
-//        if (request.getSession(false) == null || request.getSession(false).getAttribute("username") != null)
-//            path = getServletContext().getContextPath() + "/home.html";
-//        else
-//            path = getServletContext().getContextPath() + "/index.html";
-//        response.sendRedirect(path);
-        doPost(request,response);
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -73,6 +62,11 @@ public class CheckLogin extends HttpServlet {
             String errorMessage = "An error occurred while processing your request. Please try again later.";
             response.getWriter().write(errorMessage);
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request,response);
     }
 
     public void destroy() {

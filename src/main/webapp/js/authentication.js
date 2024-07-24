@@ -9,6 +9,7 @@
     let signupFormDiv = document.getElementById('signup-form');
     let showSignupLink = document.getElementById('show-signup');
     let showLoginLink = document.getElementById('show-login');
+    let errorMessage = document.getElementById("errorMessage");
 
     showSignupLink.addEventListener('click', function (event) {
         event.preventDefault();
@@ -24,12 +25,18 @@
 
     //ricevi richiesta login
     document.getElementById("loginButton").addEventListener('click', (e) => {
+
+        errorMessage.style.display = "none";
+
         var url = "login";
         makePost(url, e.target.closest("form"));
     });
 
     //ricevi richiesta signup
     document.getElementById("signupButton").addEventListener('click', (e) => {
+
+        errorMessage.style.display = "none";
+
         var url = "signup";
         var form = e.target.closest("form");
 
@@ -40,7 +47,7 @@
         var inputs = form.querySelectorAll("input[required]");
         for (var input of inputs) {
             if (!input.value.trim()) {
-                document.getElementById("errorMessage").textContent = "please fill all the fields";
+                errorMessage.textContent = "please fill all the fields";
                 return;
             }
         }
@@ -54,15 +61,15 @@
 
         if (password != null && repeatPassword != null && email != null) {
             if (password !== repeatPassword && !isValidEmail(email)) {
-                document.getElementById("errorMessage").textContent = "Invalid email format and passwords do not match.";
+                errorMessage.textContent = "Invalid email format and passwords do not match.";
                 return;
             }
             if (password !== repeatPassword) {
-                document.getElementById("errorMessage").textContent = "Passwords do not match.";
+                errorMessage.textContent = "Passwords do not match.";
                 return;
             }
             if (!isValidEmail(email)) {
-                document.getElementById("errorMessage").textContent = "Invalid email format.";
+                errorMessage.textContent = "Invalid email format.";
             }
         }
     });
@@ -84,7 +91,7 @@
                 window.location.href = "home.html";
             } else {
                 var message = request.responseText;
-                document.getElementById("errorMessage").textContent = message;
+                errorMessage.textContent = message;
             }
         }
     }

@@ -59,7 +59,7 @@ CREATE TABLE `albums` (
   UNIQUE KEY `albums_pk` (`title`),
   KEY `id_author` (`id_author`),
   CONSTRAINT `albums_ibfk_1` FOREIGN KEY (`id_author`) REFERENCES `users` (`id_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,7 +68,7 @@ CREATE TABLE `albums` (
 
 LOCK TABLES `albums` WRITE;
 /*!40000 ALTER TABLE `albums` DISABLE KEYS */;
-INSERT INTO `albums` (`id_album`, `id_author`, `title`, `date`, `imagesOrder`) VALUES (1,1,'holidays','2024-07-12',NULL),(2,2,'trips','2028-07-06',NULL),(3,4,'italy','2020-07-04',NULL),(4,1,'test','2024-07-12',NULL),(5,1,'food','2024-07-12',NULL),(6,1,'football','2024-07-12',NULL),(7,2,'movies','2020-10-28',NULL),(8,1,'Vacation','2023-06-15',NULL),(9,2,'Birthday Party','2023-08-20',NULL),(10,3,'Wedding','2022-09-30',NULL),(11,4,'Graduation','2021-07-10',NULL),(12,5,'Hiking Trip','2023-05-12',NULL),(13,6,'Christmas','2022-12-25',NULL),(14,7,'Family Reunion','2021-11-02',NULL),(15,1,'New Year','2023-01-01',NULL),(16,2,'Beach Day','2023-04-18',NULL),(17,3,'Concert','2023-07-05',NULL),(18,4,'Art Gallery','2023-03-14',NULL),(19,5,'Road Trip','2023-02-28',NULL),(20,6,'Halloween','2022-10-31',NULL),(21,7,'Easter','2023-04-09',NULL),(22,1,'Spring Festival','2023-05-05',NULL),(23,2,'Autumn Leaves','2022-11-15',NULL),(24,3,'City Tour','2022-09-22',NULL),(25,4,'Museum Visit','2023-06-20',NULL),(26,5,'Picnic','2023-07-25',NULL),(27,6,'Zoo Trip','2023-08-14',NULL);
+INSERT INTO `albums` (`id_album`, `id_author`, `title`, `date`, `imagesOrder`) VALUES (1,1,'holidays','2024-07-12','1,3,11,4,7,6,8,9,2,5,12'),(2,2,'trips','2028-07-06',NULL),(3,4,'italy','2020-07-04',NULL),(4,1,'test','2024-07-12','1,11,8,4,7,3,9,2,5,12,6'),(5,1,'food','2024-07-12','6,8,1,11,4,7,3,9,2,5,12'),(6,1,'football','2024-07-12','6,8,1,11,4,7,3,9,2,5,12'),(7,2,'movies','2020-10-28',NULL),(8,1,'Vacation','2023-06-15','6,8,1,11,4,7,3,9,2,5,12'),(9,2,'Birthday Party','2023-08-20',NULL),(10,3,'Wedding','2022-09-30',NULL),(11,4,'Graduation','2021-07-10',NULL),(12,5,'Hiking Trip','2023-05-12',NULL),(13,6,'Christmas','2022-12-25',NULL),(14,7,'Family Reunion','2021-11-02',NULL),(15,1,'New Year','2023-01-01',NULL),(16,2,'Beach Day','2023-04-18',NULL),(17,3,'Concert','2023-07-05',NULL),(18,4,'Art Gallery','2023-03-14',NULL),(19,5,'Road Trip','2023-02-28',NULL),(20,6,'Halloween','2022-10-31',NULL),(21,7,'Easter','2023-04-09',NULL),(22,1,'Spring Festival','2023-05-05','6,8,1,11,4,7,3,9,2,5,12'),(23,2,'Autumn Leaves','2022-11-15',NULL),(24,3,'City Tour','2022-09-22',NULL),(25,4,'Museum Visit','2023-06-20',NULL),(26,5,'Picnic','2023-07-25',NULL),(27,6,'Zoo Trip','2023-08-14',NULL);
 /*!40000 ALTER TABLE `albums` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -90,7 +90,7 @@ CREATE TABLE `comments` (
   CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`image`) REFERENCES `images` (`id_image`),
   CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`),
   CONSTRAINT `comments_users_id_user_fk` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=79 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +99,7 @@ CREATE TABLE `comments` (
 
 LOCK TABLES `comments` WRITE;
 /*!40000 ALTER TABLE `comments` DISABLE KEYS */;
-INSERT INTO `comments` (`id_comment`, `text`, `image`, `user`) VALUES (2,'wow',1,1),(5,'bella',4,1),(6,'amazing',7,1),(8,'cool',2,1),(9,'Cool picture!',1,1),(10,'Amazing!',2,2),(11,'I love it!',3,3),(12,'Nice shot!',4,4),(13,'Beautiful!',5,5),(14,'Great work!',6,6),(15,'Stunning!',7,7),(16,'Wow!',8,1),(17,'Fantastic!',9,2),(18,'Impressive!',10,3),(19,'Excellent!',11,4),(20,'Remarkable!',12,5),(21,'So cool!',1,2),(22,'Love this!',2,3),(23,'Fantastic shot!',3,4),(24,'Wonderful!',4,5),(25,'Great detail!',5,6),(26,'Spectacular!',6,7),(27,'Breathtaking!',7,1),(28,'Love the colors!',8,2),(29,'So beautiful!',9,3),(30,'Incredible!',10,4),(31,'Mind-blowing!',11,5),(32,'So detailed!',12,6),(33,'Outstanding!',1,3),(34,'Superb!',2,4),(35,'Marvelous!',3,5),(36,'Unbelievable!',4,6),(37,'Mesmerizing!',5,7),(38,'Fascinating!',6,1),(39,'Phenomenal!',7,2),(40,'Great shot!',8,3),(41,'Love the perspective!',9,4),(42,'So artistic!',10,5),(43,'Very creative!',11,6),(44,'Such a great image!',12,7),(45,'bella',2,1),(46,'dsds',4,1),(47,'nice',4,1),(48,'d',4,1),(49,'s',4,1),(50,'sdd',4,1),(51,'dsd',4,1),(52,'dsd',4,1),(53,'aaa',4,1),(54,'cioa',9,1),(55,'a',4,1),(56,'pasda',4,1),(57,'aaa',7,1),(58,'dsda',7,1),(59,'sadad',7,1),(60,'dsadsa',7,1),(61,'dsad',7,1),(62,'dada',7,1),(63,'adsa',7,1),(64,'bella',7,1),(65,'bella',7,1),(66,'ciao',7,1),(67,'bella gabbo',4,1),(68,'a',7,1),(71,'bello',7,1),(72,'good',3,1),(73,'comment',7,1),(75,'cioa',7,1),(76,'ddds',7,1),(77,'ddd',7,1),(78,'ddd',9,1);
+INSERT INTO `comments` (`id_comment`, `text`, `image`, `user`) VALUES (2,'wow',1,1),(5,'bella',4,1),(6,'amazing',7,1),(8,'cool',2,1),(9,'Cool picture!',1,1),(10,'Amazing!',2,2),(11,'I love it!',3,3),(12,'Nice shot!',4,4),(13,'Beautiful!',5,5),(14,'Great work!',6,6),(15,'Stunning!',7,7),(16,'Wow!',8,1),(17,'Fantastic!',9,2),(18,'Impressive!',10,3),(19,'Excellent!',11,4),(20,'Remarkable!',12,5),(21,'So cool!',1,2),(22,'Love this!',2,3),(23,'Fantastic shot!',3,4),(24,'Wonderful!',4,5),(25,'Great detail!',5,6),(26,'Spectacular!',6,7),(27,'Breathtaking!',7,1),(28,'Love the colors!',8,2),(29,'So beautiful!',9,3),(30,'Incredible!',10,4),(31,'Mind-blowing!',11,5),(32,'So detailed!',12,6),(33,'Outstanding!',1,3),(34,'Superb!',2,4),(35,'Marvelous!',3,5),(36,'Unbelievable!',4,6),(37,'Mesmerizing!',5,7),(38,'Fascinating!',6,1),(39,'Phenomenal!',7,2),(40,'Great shot!',8,3),(41,'Love the perspective!',9,4),(42,'So artistic!',10,5),(43,'Very creative!',11,6),(44,'Such a great image!',12,7);
 /*!40000 ALTER TABLE `comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -147,7 +147,7 @@ CREATE TABLE `users` (
   `password` varchar(45) NOT NULL,
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `username_UNIQUE` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,7 +156,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`id_user`, `email`, `username`, `password`) VALUES (1,'admin','admin','pwd'),(2,'45@gmail.com','elly','444'),(3,'dsadsa@gmail.com','john','1'),(4,'fsafoa@gmail.com','marshall','sas'),(5,'dasdasfff@gmail.com','ted','1'),(6,'4aasdsadasd5@gmail.com','robert','w'),(7,'dd@sada.it','walter','s'),(8,'45@gmail.comd','d','d'),(10,'sqgzaqwgczwtrxvwtq@ytnhy.com','ddd','a'),(11,'dsadsads@ddsd.dsad','fff','fff'),(12,'d@d.d','dad','dad');
+INSERT INTO `users` (`id_user`, `email`, `username`, `password`) VALUES (1,'admin','admin','pwd'),(2,'45@gmail.com','elly','444'),(3,'dsadsa@gmail.com','john','1'),(4,'fsafoa@gmail.com','marshall','sas'),(5,'dasdasfff@gmail.com','ted','1'),(6,'4aasdsadasd5@gmail.com','robert','w'),(7,'dd@sada.it','walter','s');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -169,4 +169,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-22 16:59:57
+-- Dump completed on 2024-07-24 14:08:03

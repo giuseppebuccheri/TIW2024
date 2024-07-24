@@ -33,16 +33,6 @@ public class GetAllAlbums extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        User user = (User) session.getAttribute("user");
-
-        //Test error alert
-//        if (true){
-//            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//            response.getWriter().write("Not possible to recover albums, try later");
-//            return;
-//        }
-
         List<Album> albums = null;
         AlbumDao albumDao = new AlbumDao(connection);
 
@@ -63,12 +53,6 @@ public class GetAllAlbums extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json_albums);
     }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request,response);
-    }
-
 
     private void setUsernames(List<Album> albums) {
         UserDao dao = new UserDao(connection);

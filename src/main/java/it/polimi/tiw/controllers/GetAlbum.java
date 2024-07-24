@@ -40,9 +40,6 @@ public class GetAlbum extends HttpServlet {
         if(request.getParameter("id") != null){
             try {
                 id = Integer.parseInt(request.getParameter("id"));
-                //Test errore
-//                String prova = "dsafa";
-//                id = Integer.parseInt(prova);
             } catch (NumberFormatException | NullPointerException e) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 response.getWriter().write("Not possible to recover album, try later");

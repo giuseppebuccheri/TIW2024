@@ -35,8 +35,6 @@ public class SaveAlbumsOrder extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-
         String order = request.getParameter("order");
 
         AlbumDao dao = new AlbumDao(connection);
@@ -67,6 +65,12 @@ public class SaveAlbumsOrder extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req,resp);
+    }
+
+    @Override
     public void destroy() {
         try {
             connection.close();

@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import it.polimi.tiw.beans.User;
 import it.polimi.tiw.dao.UserDao;
 
 import static it.polimi.tiw.utils.ConnectionHandler.getConnection;
@@ -48,10 +51,18 @@ public class Signup extends HttpServlet {
             if (dao.isNew(username)) {
                 if (repeat.equals(password)){
                     if (emailValid(email)){
-                        if (dao.insertUser(username,password,email)){
-                            request.getSession().setAttribute("username", username);
+                        User user = dao.insertUser(username,password,email);
+                        if (user != null){
+                            request.getSession().setAttribute("user", user);
+
+                            Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
+                            String json_user = gson.toJson(user);
+
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write(json_user);
+
                             response.setStatus(HttpServletResponse.SC_OK);
-                            response.getWriter().write(username);
                         }
                         else {
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

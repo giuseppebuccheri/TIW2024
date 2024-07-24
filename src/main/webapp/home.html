@@ -12,9 +12,9 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <form action="logout" method="post" class="form-inline ml-auto">
-        <button type="submit" class="btn btn-outline-danger btn-lg">Logout</button>
-    </form>
+    <div class="form-inline ml-auto">
+        <a href="logout"><input type="button" class="btn btn-outline-danger btn-lg" value="Logout"></a>
+    </div>
 </nav>
 
 <div class="container">
@@ -25,12 +25,16 @@
         <div id="albumImagesDiv" class="panel my-4" style="padding: 20px;">
             <span id="closeAlbum" class="close">&times;</span>
             <input id="editOrderButton" class="btn btn-primary ml-1" type="button" value="Edit Order">
-            <input id="saveOrderButton" class="btn btn-primary ml-1" type="button" value="Save Images Order">
+            <form id="saveOrderForm">
+                <input id="saveOrderButton" class="btn btn-primary ml-1" type="button" value="Save Images Order">
+            </form>
+
             <h1 class="text-center" id="albumDivTitle"></h1><br>
-            <b><p class="text-center">Title:</b><span id="albumTitle"></span></p>
-            <b><p class="text-center">Creator:</b><span id="albumCreator"></span></p>
-            <b><p class="text-center">Date:</b><span id="albumDate"></span></p>
+            <b><p class="text-center">Title: </b><span id="albumTitle"></span></p>
+            <b><p class="text-center">Creator id: </b><span id="albumCreator"></span></p>
+            <b><p class="text-center">Date: </b><span id="albumDate"></span></p>
             <div id="albumImagesContainer" class="table-responsive" style="display:none;">
+                <h3 id="emptyAlbumText" class="text-center" style="display: none;"></h3>
                 <table class="table table-bordered text-center">
                     <tbody>
                     <tr id="imageRow">
@@ -72,7 +76,7 @@
                         <br>
                         <div class="form-container">
                             <h3 class="text-center">Create a new album</h3>
-                            <form id="createAlbumForm" method="post">
+                            <form id="createAlbumForm">
                                 <div class="form-group">
                                     <label class="text-center" for="title">Title:</label>
                                     <input type="text" class="form-control" id="title" name="title" required>
@@ -108,6 +112,7 @@
                         <tbody id="userAlbums">
                         </tbody>
                     </table>
+                    <div id="noAlbumsMessage" style="display: none;"><h3 class="text-center">No album uploaded yet</h3></div>
                 </div>
             </div>
             <div class="col-md-6">
@@ -146,13 +151,13 @@
 
                                     </div>
                                     <div class="col">
-                                        <h3><strong>Title:</strong> <span id="modalTitle"></span></h3>
+                                        <h3><strong>Title: </strong> <span id="modalTitle"></span></h3>
                                     </div>
                                     <div class="col">
-                                        <h3><strong>Author:</strong> <span id="modalAuthor"></span></h3>
+                                        <h3><strong>Author: </strong> <span id="modalAuthor"></span></h3>
                                     </div>
                                     <div class="col">
-                                        <h3><strong>Description:</strong> <span id="modalDescription"></span></h3>
+                                        <h3><strong>Description: </strong> <span id="modalDescription"></span></h3>
                                     </div>
                                     <div class="col">
                                         <h3><strong>Date:</strong> <span id="modalDate"></span></h3>
