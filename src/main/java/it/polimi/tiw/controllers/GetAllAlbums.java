@@ -54,6 +54,11 @@ public class GetAllAlbums extends HttpServlet {
         response.getWriter().write(json_albums);
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+
     private void setUsernames(List<Album> albums) {
         UserDao dao = new UserDao(connection);
 

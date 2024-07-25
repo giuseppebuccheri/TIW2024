@@ -23,12 +23,12 @@ DROP TABLE IF EXISTS `album_image`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `album_image` (
-  `album_id` int NOT NULL,
-  `image_id` int NOT NULL,
-  PRIMARY KEY (`album_id`,`image_id`),
-  KEY `image_id` (`image_id`),
-  CONSTRAINT `album_image_ibfk_1` FOREIGN KEY (`album_id`) REFERENCES `albums` (`id_album`) ON DELETE CASCADE,
-  CONSTRAINT `album_image_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `images` (`id_image`) ON DELETE CASCADE
+                               `album_id` int NOT NULL,
+                               `image_id` int NOT NULL,
+                               PRIMARY KEY (`album_id`,`image_id`),
+                               KEY `image_id` (`image_id`),
+                               CONSTRAINT `album_image_ibfk_1` FOREIGN KEY (`album_id`) REFERENCES `albums` (`id_album`) ON DELETE CASCADE,
+                               CONSTRAINT `album_image_ibfk_2` FOREIGN KEY (`image_id`) REFERENCES `images` (`id_image`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -50,15 +50,15 @@ DROP TABLE IF EXISTS `albums`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `albums` (
-  `id_album` int NOT NULL AUTO_INCREMENT,
-  `id_author` int NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `date` date NOT NULL,
-  `imagesOrder` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id_album`),
-  UNIQUE KEY `albums_pk` (`title`),
-  KEY `id_author` (`id_author`),
-  CONSTRAINT `albums_ibfk_1` FOREIGN KEY (`id_author`) REFERENCES `users` (`id_user`)
+                          `id_album` int NOT NULL AUTO_INCREMENT,
+                          `id_author` int NOT NULL,
+                          `title` varchar(255) NOT NULL,
+                          `date` date NOT NULL,
+                          `imagesOrder` varchar(255) DEFAULT NULL,
+                          PRIMARY KEY (`id_album`),
+                          UNIQUE KEY `albums_pk` (`title`),
+                          KEY `id_author` (`id_author`),
+                          CONSTRAINT `albums_ibfk_1` FOREIGN KEY (`id_author`) REFERENCES `users` (`id_user`)
 ) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -80,16 +80,16 @@ DROP TABLE IF EXISTS `comments`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `comments` (
-  `id_comment` int NOT NULL AUTO_INCREMENT,
-  `text` varchar(50) NOT NULL,
-  `image` int NOT NULL,
-  `user` int NOT NULL,
-  PRIMARY KEY (`id_comment`),
-  KEY `image` (`image`),
-  KEY `comments_users_id_user_fk` (`user`),
-  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`image`) REFERENCES `images` (`id_image`),
-  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`),
-  CONSTRAINT `comments_users_id_user_fk` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`) ON UPDATE CASCADE
+                            `id_comment` int NOT NULL AUTO_INCREMENT,
+                            `text` varchar(50) NOT NULL,
+                            `image` int NOT NULL,
+                            `user` int NOT NULL,
+                            PRIMARY KEY (`id_comment`),
+                            KEY `image` (`image`),
+                            KEY `comments_users_id_user_fk` (`user`),
+                            CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`image`) REFERENCES `images` (`id_image`),
+                            CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`),
+                            CONSTRAINT `comments_users_id_user_fk` FOREIGN KEY (`user`) REFERENCES `users` (`id_user`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -111,15 +111,15 @@ DROP TABLE IF EXISTS `images`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `images` (
-  `id_image` int NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `date` date NOT NULL,
-  `description` text NOT NULL,
-  `path` varchar(255) NOT NULL,
-  `author` int NOT NULL,
-  PRIMARY KEY (`id_image`),
-  KEY `id_author` (`author`),
-  CONSTRAINT `images_ibfk_1` FOREIGN KEY (`author`) REFERENCES `users` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE
+                          `id_image` int NOT NULL AUTO_INCREMENT,
+                          `title` varchar(255) NOT NULL,
+                          `date` date NOT NULL,
+                          `description` text NOT NULL,
+                          `path` varchar(255) NOT NULL,
+                          `author` int NOT NULL,
+                          PRIMARY KEY (`id_image`),
+                          KEY `id_author` (`author`),
+                          CONSTRAINT `images_ibfk_1` FOREIGN KEY (`author`) REFERENCES `users` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -141,12 +141,12 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
-  `id_user` int NOT NULL AUTO_INCREMENT,
-  `email` varchar(45) NOT NULL,
-  `username` varchar(45) NOT NULL,
-  `password` varchar(45) NOT NULL,
-  PRIMARY KEY (`id_user`),
-  UNIQUE KEY `username_UNIQUE` (`username`)
+                         `id_user` int NOT NULL AUTO_INCREMENT,
+                         `email` varchar(45) NOT NULL,
+                         `username` varchar(45) NOT NULL,
+                         `password` varchar(45) NOT NULL,
+                         PRIMARY KEY (`id_user`),
+                         UNIQUE KEY `username_UNIQUE` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -169,4 +169,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-24 14:08:03
+-- Dump completed on 2024-07-24 14:07:48

@@ -1,7 +1,3 @@
-/**
- * Auth management
- */
-
 (function () {
 
     //Mostra i due form

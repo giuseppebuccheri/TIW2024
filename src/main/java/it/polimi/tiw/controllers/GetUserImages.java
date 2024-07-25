@@ -59,4 +59,9 @@ public class GetUserImages extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
 }

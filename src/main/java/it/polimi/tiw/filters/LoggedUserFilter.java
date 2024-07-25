@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter({"/getUserImages", "/logout","/album","/createAlbum","/image","/addComment","/deleteImage","/saveOrder"})
+@WebFilter({"/getUserImages", "/logout","/album","/createAlbum","/addComment","/deleteImage","/saveOrder"})
 public class LoggedUserFilter implements Filter{
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
