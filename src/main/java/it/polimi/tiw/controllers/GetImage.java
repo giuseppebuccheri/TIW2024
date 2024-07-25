@@ -103,6 +103,11 @@ public class GetImage extends HttpServlet {
         templateEngine.process(path, ctx, response.getWriter());
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+
     private void setUsernames(List<Comment> comments,UserDao dao) {
         for(Comment c: comments){
             c.setUsername(dao.getUsername(c.getUser()));

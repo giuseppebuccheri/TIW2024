@@ -34,5 +34,10 @@ public class Logout extends HttpServlet {
         String path = getServletContext().getContextPath() + "/index.html";
         response.sendRedirect(path);
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
 }
 
